@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AI Crop Advisor — Get crop recommendations based on your season, soil type, and investment capacity.">
+    <meta name="theme-color" content="#10B981">
+    <title>AI Crop Advisor — AgriHub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    <style>
+      .ah-icon{width:16px;height:16px;margin-right:5px;vertical-align:middle;flex-shrink:0;display:inline-block;}
+      .ah-icon-lg{width:22px;height:22px;}
+      .ah-green{color:#16a34a;}.ah-blue{color:#3b82f6;}.ah-purple{color:#7c3aed;}
+      .ah-yellow{color:#ca8a04;}.ah-gray{color:#6b7280;}.ah-orange{color:#ea580c;}
+      h1,h2,h3,h4{font-family:'Poppins','DM Sans',sans-serif;}
+    </style>
+</head>
+
+<body>
+    <div class="page-progress" id="pageProgress"></div>
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><span class="brand-icon">🌾</span><a href="index.html" class="brand-text">Agri<span
+                        class="brand-accent">Hub</span></a></div>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" data-i18n="nav_home"><i data-lucide="home" class="ah-icon ah-green"></i>Home</a>
+                <a href="fertilizer.html" data-i18n="nav_fertilizer"><i data-lucide="leaf" class="ah-icon ah-green"></i>Fertilizer</a>
+                <a href="polyhouse.html" data-i18n="nav_polyhouse"><i data-lucide="warehouse" class="ah-icon ah-green"></i>Polyhouse</a>
+                <a href="schemes.html" data-i18n="nav_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i>Schemes</a>
+                <a href="weather.html" data-i18n="nav_weather"><i data-lucide="cloud-sun" class="ah-icon ah-blue"></i>Weather</a>
+                <a href="crop-advisor.html" class="active" data-i18n="nav_advisor"><i data-lucide="brain" class="ah-icon ah-purple"></i>Crop Advisor</a>
+                <a href="ai-assistant.html" data-i18n="nav_ai_assistant"><i data-lucide="bot" class="ah-icon ah-pink"></i>AI Assistant</a>
+                <a href="pesticide.html" data-i18n="nav_pesticide"><i data-lucide="shield-alert" class="ah-icon ah-red"></i>Pesticides</a>
+            </nav>
+            <div class="nav-actions">
+                <select id="languageSelector" class="lang-select" aria-label="Select Language">
+                    <option value="en">🌐 English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                </select>
+                <div id="authButtons"><button class="btn-nav-outline" id="openLogin">Login</button><button
+                        class="btn-nav-primary" id="openRegister">Register</button></div>
+                <div id="userMenu" class="user-menu hidden"><span class="user-greeting" id="userGreeting">👋
+                        Hello</span><a href="dashboard.html" class="btn-nav-outline">Dashboard</a><button
+                        class="btn-nav-outline" id="logoutBtn">Logout</button></div>
+            </div>
+            <button class="hamburger" id="hamburger"
+                aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </header>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <section class="page-hero">
+        <div class="hero-bg">
+            <img src="https://images.unsplash.com/photo-1574943320219-553eb213f72d?auto=format&fit=crop&w=1920&q=80"
+                alt="Crops and farmland" class="hero-img" loading="eager">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="page-hero-content animate-fade-up">
+            <h1 data-i18n="advisor_title"><i data-lucide="brain" class="ah-icon-lg ah-purple"></i>AI Crop Advisor</h1>
+            <p data-i18n="advisor_subtitle">Find the most profitable crop for you</p>
+        </div>
+    </section>
+
+    <div class="container" style="padding-bottom:64px;">
+        <div class="advisor-card animate-fade-up">
+            <div class="advisor-header">
+                <span class="advisor-icon"></span>
+                <h2 data-i18n="advisor_card_title"><i data-lucide="brain" class="ah-icon ah-purple"></i>AI Crop Advisor</h2>
+                <p data-i18n="advisor_card_desc">Tell us about your farm and we'll recommend the most profitable crop</p>
+            </div>
+            <div class="step-indicator">
+                <div class="step active" data-step="1"><span>1</span> <span data-i18n="advisor_season_lbl">Season</span></div>
+                <div class="step-line"></div>
+                <div class="step" data-step="2"><span>2</span> <span data-i18n="advisor_soil_lbl">Soil</span></div>
+                <div class="step-line"></div>
+                <div class="step" data-step="3"><span>3</span> <span data-i18n="advisor_invest_lbl">Budget</span></div>
+            </div>
+            <form id="advisorForm">
+                <div class="form-group">
+                    <label><i data-lucide="sun" class="ah-icon ah-yellow"></i><span data-i18n="advisor_season_lbl">Select Season</span></label>
+                    <div class="option-cards" id="seasonOptions">
+                        <div class="option-card" data-value="kharif"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_season_kharif">Kharif</span><span class="option-desc">Jun – Oct (Monsoon)</span>
+                        </div>
+                        <div class="option-card" data-value="rabi"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_season_rabi">Rabi</span><span class="option-desc">Nov – Apr (Winter)</span>
+                        </div>
+                        <div class="option-card" data-value="zaid"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_season_zaid">Zaid</span><span class="option-desc">Mar – Jun (Summer)</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="layers" class="ah-icon ah-orange"></i><span data-i18n="advisor_soil_lbl">Soil Type</span></label>
+                    <div class="option-cards" id="soilOptions">
+                        <div class="option-card" data-value="black"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_soil_black">Black Soil</span><span class="option-desc">High water
+                                retention</span></div>
+                        <div class="option-card" data-value="red"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_soil_red">Red Soil</span><span class="option-desc">Good drainage</span></div>
+                        <div class="option-card" data-value="alluvial"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_soil_alluvial">Alluvial Soil</span><span class="option-desc">Most fertile</span>
+                        </div>
+                        <div class="option-card" data-value="sandy"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_soil_sandy">Sandy Soil</span><span class="option-desc">Fast drainage</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label><i data-lucide="indian-rupee" class="ah-icon ah-green"></i><span data-i18n="advisor_invest_lbl">Investment Capacity</span></label>
+                    <div class="option-cards" id="investmentOptions">
+                        <div class="option-card" data-value="low"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_invest_low">Low</span><span class="option-desc">Under ₹15,000</span></div>
+                        <div class="option-card" data-value="medium"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_invest_med">Medium</span><span class="option-desc">₹15,000 – ₹35,000</span>
+                        </div>
+                        <div class="option-card" data-value="high"><span class="option-icon"></span><span
+                                class="option-label" data-i18n="advisor_invest_high">High</span><span class="option-desc">Above ₹35,000</span></div>
+                    </div>
+                </div>
+                <button type="submit" class="btn-primary btn-full btn-large" id="advisorSubmit" data-i18n="advisor_btn_calc" disabled><i data-lucide="sparkles" class="ah-icon"></i>Find Best Crop</button>
+            </form>
+            <div id="advisorResult" class="advisor-result hidden">
+                <div class="result-banner"><span class="result-check"></span>
+                    <h3 data-i18n="advisor_rec_title">Best Crop Recommendation</h3>
+                </div>
+                <div class="recommended-crop">
+                    <div class="crop-icon-large" id="recCropIcon"><i data-lucide="wheat" style="width:48px;height:48px;color:#10B981;"></i></div>
+                    <h2 id="recCropName">--</h2>
+                    <span class="crop-profitability" id="recProfitability">--</span>
+                </div>
+                <div class="crop-details-grid">
+                    <div class="crop-detail"> <strong data-i18n="advisor_rec_duration">Duration:</strong> <span id="recDuration">--</span></div>
+                    <div class="crop-detail"> <strong data-i18n="advisor_rec_water">Water Need:</strong> <span id="recWater">--</span></div>
+                    <div class="crop-detail"> <strong data-i18n="advisor_rec_profit">Est. Profit:</strong> <span id="recProfit">--</span></div>
+                    <div class="crop-detail"> <strong data-i18n="advisor_rec_demand">Market Demand:</strong> <span id="recDemand">--</span></div>
+                </div>
+                <div class="crop-reasoning">
+                    <h4 data-i18n="advisor_rec_reasoning">Why this crop?</h4>
+                    <p id="recReasoning">--</p>
+                </div>
+                <div class="alternative-crops">
+                    <h4>Alternative Options:</h4>
+                    <div id="altCrops" class="alt-crops-list"></div>
+                </div>
+                <button class="btn-outline btn-full" id="resetAdvisor" data-i18n="advisor_btn_reset"><i data-lucide="rotate-ccw" class="ah-icon"></i>Try Different Inputs</button>
+            </div>
+        </div>
+        <div class="text-center"><a href="index.html" class="btn-back" data-i18n="btn_back_home">← Back to Home</a></div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;">
+                <p>© 2025 AgriHub. Made with <i data-lucide="heart" style="width:14px;height:14px;color:#10B981;vertical-align:middle;"></i> for Indian Farmers.</p>
+            </div>
+        </div>
+    </footer>
+    <button class="scroll-top" id="scrollToTop" aria-label="Scroll to top">↑</button>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/translations.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ai-assistant.js"></script>
+    <script src="assets/js/crop-advisor.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

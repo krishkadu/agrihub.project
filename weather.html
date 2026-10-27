@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Get real-time weather forecasts for your farm location with farming-specific advice.">
+    <meta name="theme-color" content="#10B981">
+    <title>Live Weather — AgriHub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    <style>
+      .ah-icon{width:16px;height:16px;margin-right:5px;vertical-align:middle;flex-shrink:0;display:inline-block;}
+      .ah-icon-lg{width:22px;height:22px;}
+      .ah-green{color:#16a34a;}.ah-blue{color:#3b82f6;}.ah-purple{color:#7c3aed;}
+      .ah-yellow{color:#ca8a04;}.ah-gray{color:#6b7280;}.ah-orange{color:#ea580c;}
+      h1,h2,h3,h4{font-family:'Poppins','DM Sans',sans-serif;}
+    </style>
+</head>
+
+<body>
+    <div class="page-progress" id="pageProgress"></div>
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><span class="brand-icon">🌾</span><a href="index.html" class="brand-text">Agri<span
+                        class="brand-accent">Hub</span></a></div>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" data-i18n="nav_home"><i data-lucide="home" class="ah-icon ah-green"></i>Home</a>
+                <a href="fertilizer.html" data-i18n="nav_fertilizer"><i data-lucide="leaf" class="ah-icon ah-green"></i>Fertilizer</a>
+                <a href="polyhouse.html" data-i18n="nav_polyhouse"><i data-lucide="warehouse" class="ah-icon ah-green"></i>Polyhouse</a>
+                <a href="schemes.html" data-i18n="nav_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i>Schemes</a>
+                <a href="weather.html" class="active" data-i18n="nav_weather"><i data-lucide="cloud-sun" class="ah-icon ah-blue"></i>Weather</a>
+                <a href="crop-advisor.html" data-i18n="nav_advisor"><i data-lucide="brain" class="ah-icon ah-purple"></i>Crop Advisor</a>
+                <a href="ai-assistant.html" data-i18n="nav_ai_assistant"><i data-lucide="bot" class="ah-icon ah-pink"></i>AI Assistant</a>
+                <a href="pesticide.html" data-i18n="nav_pesticide"><i data-lucide="shield-alert" class="ah-icon ah-red"></i>Pesticides</a>
+            </nav>
+            <div class="nav-actions">
+                <select id="languageSelector" class="lang-select" aria-label="Select Language">
+                    <option value="en">🌐 English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                </select>
+                <div id="authButtons"><button class="btn-nav-outline" id="openLogin">Login</button><button
+                        class="btn-nav-primary" id="openRegister">Register</button></div>
+                <div id="userMenu" class="user-menu hidden"><span class="user-greeting" id="userGreeting">👋
+                        Hello</span><a href="dashboard.html" class="btn-nav-outline">Dashboard</a><button
+                        class="btn-nav-outline" id="logoutBtn">Logout</button></div>
+            </div>
+            <button class="hamburger" id="hamburger"
+                aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </header>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <section class="page-hero">
+        <div class="hero-bg">
+            <img src="assets/images/weather_hero.jpg"
+                alt="Weather sky over farmland" class="hero-img" loading="eager">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="page-hero-content animate-fade-up">
+            <h1 data-i18n="weather_title"><i data-lucide="cloud-sun" class="ah-icon-lg ah-blue"></i>Live Weather Forecast</h1>
+            <p data-i18n="weather_subtitle">Real-time conditions for your farm</p>
+        </div>
+    </section>
+
+    <div class="container" style="padding-bottom:64px;">
+        <div class="weather-widget animate-fade-up">
+            <div id="weatherInitial" class="weather-initial">
+                <div class="weather-init-icon"></div>
+                <h2 data-i18n="weather_title"><i data-lucide="map-pin" class="ah-icon ah-blue"></i>Get Real-Time Weather</h2>
+                <p data-i18n="weather_subtitle">Allow location access to see weather conditions at your farm location.</p>
+                <button class="btn-primary btn-large" id="detectLocation"><span id="detectBtnText" data-i18n="weather_detect_btn"><i data-lucide="map-pin" class="ah-icon"></i>Detect My Location</span></button>
+                <p class="weather-privacy-note"> Your location is used only for weather lookup and not stored.</p>
+            </div>
+            <div id="weatherLoading" class="weather-loading hidden">
+                <div class="spinner spinner--large"></div>
+                <p class="loading-text" data-i18n="weather_detecting">Fetching satellite data...</p>
+            </div>
+            <div id="weatherDisplay" class="weather-display hidden">
+                <div class="weather-header">
+                    <div class="weather-location">
+                        <span class="location-icon"></span>
+                        <h2 id="weatherCity">--</h2>
+                        <span id="weatherCountry" class="weather-country"></span>
+                    </div>
+                    <button class="btn-refresh" id="refreshWeather" title="Refresh" data-i18n-title="weather_refresh_btn"></button>
+                </div>
+                <div class="weather-main">
+                    <div class="weather-icon-large" id="weatherIconLarge">--</div>
+                    <div class="weather-temp-block">
+                        <span class="temp-value" id="weatherTemp">--</span><span class="temp-unit">°C</span>
+                    </div>
+                    <p class="weather-condition" id="weatherCondition">--</p>
+                    <p class="weather-feels-like"><span data-i18n="weather_feels_like">Feels like</span>: <span id="weatherFeelsLike">--</span>°C</p>
+                </div>
+                <div class="weather-stats-grid">
+                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
+                            id="weatherHumidity">--</span><span class="stat-lbl" data-i18n="weather_humidity_lbl">Humidity</span></div>
+                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
+                            id="weatherWind">--</span><span class="stat-lbl" data-i18n="weather_wind_lbl">Wind km/h</span></div>
+                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
+                            id="weatherVisibility">--</span><span class="stat-lbl" data-i18n="weather_visibility_lbl">Visibility km</span></div>
+                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
+                            id="weatherPressure">--</span><span class="stat-lbl" data-i18n="weather_pressure_lbl">Pressure hPa</span></div>
+                </div>
+                <div class="weather-advice" id="weatherAdvice">
+                    <h4 data-i18n="weather_advisory_title">🌾 Farming Advice for Today</h4>
+                    <p id="adviceText">--</p>
+                </div>
+                <div class="weather-updated">Last updated: <span id="weatherTime">--</span></div>
+            </div>
+            <div id="weatherError" class="weather-error hidden">
+                <span class="error-icon"></span>
+                <h3 data-i18n="weather_err_title">Unable to get weather data</h3>
+                <p id="weatherErrorMsg">Location access denied or network unavailable.</p>
+                <button class="btn-primary" id="retryWeather" data-i18n="weather_retry_btn">Try Again</button>
+            </div>
+        </div>
+        <div class="text-center"><a href="index.html" class="btn-back" data-i18n="btn_back_home">← Back to Home</a></div>
+    </div>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;">
+                <p>© 2025 AgriHub. Made with <i data-lucide="heart" style="width:14px;height:14px;color:#10B981;vertical-align:middle;"></i> for Indian Farmers.</p>
+            </div>
+        </div>
+    </footer>
+    <button class="scroll-top" id="scrollToTop" aria-label="Scroll to top">↑</button>
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/translations.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ai-assistant.js"></script>
+    <script src="assets/js/weather.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

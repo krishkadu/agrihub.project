@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="AgriHub Dashboard — Your personal farming command center. View calculations, saved schemes, crop history and profile.">
+    <meta name="theme-color" content="#10B981">
+    <title>Dashboard — AgriHub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+
+    <!-- ===== [ICONS-CDN] Lucide Icons ===== -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- ===== [ICONS-STYLES-START] Safe additive icon + typography ===== -->
+    <style>
+      .ah-icon {
+        width: 16px; height: 16px;
+        margin-right: 5px;
+        vertical-align: middle;
+        flex-shrink: 0;
+        display: inline-block;
+      }
+      .ah-icon-lg { width: 24px; height: 24px; }
+      .ah-green  { color: #16a34a; }
+      .ah-blue   { color: #3b82f6; }
+      .ah-purple { color: #7c3aed; }
+      .ah-yellow { color: #ca8a04; }
+      .ah-gray   { color: #6b7280; }
+      .ah-red    { color: #dc2626; }
+      h1, h2, h3, h4 { font-family: 'Poppins', 'DM Sans', sans-serif; }
+    </style>
+    <!-- ===== [ICONS-STYLES-END] ===== -->
+
+    <!-- ===== [PHOTO-STYLES-START] Cropper.js CDN ===== -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
+    <!-- ===== [PHOTO-STYLES-END] ===== -->
+
+    <style>
+        /* ── Dashboard-specific styles ── */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: calc(100vh - 72px);
+            margin-top: 72px;
+            background: var(--bg-secondary, #f8faf9);
+        }
+
+        /* Sidebar */
+        .dashboard-sidebar {
+            background: var(--white, #fff);
+            border-right: 1px solid var(--border-color, #e5e7eb);
+            padding: 28px 20px;
+            position: sticky;
+            top: 72px;
+            height: calc(100vh - 72px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .user-profile-card {
+            text-align: center;
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+            margin-bottom: 20px;
+        }
+
+        /* [PHOTO-REPLACED: .user-avatar-large emoji placeholder — now real avatar component] */
+        /* Original: .user-avatar-large { width:72px; height:72px; background:gradient; ... } */
+
+        .user-profile-card h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary, #111827);
+            margin: 0 0 4px;
+        }
+
+        .user-profile-card p {
+            font-size: 0.8rem;
+            color: var(--text-secondary, #6b7280);
+            margin: 0 0 10px;
+        }
+
+        .user-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        .dash-nav { display: flex; flex-direction: column; gap: 4px; flex: 1; }
+
+        .dash-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 11px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text-secondary, #6b7280);
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            width: 100%;
+            text-align: left;
+        }
+
+        .dash-nav-link:hover {
+            background: #f0fdf4;
+            color: #10B981;
+        }
+
+        .dash-nav-link.active {
+            background: linear-gradient(135deg, #ecfdf5, #d1fae5);
+            color: #059669;
+            font-weight: 600;
+        }
+
+        .btn-logout-sidebar {
+            margin-top: auto;
+            padding-top: 20px;
+            border-top: 1px solid var(--border-color, #e5e7eb);
+            background: transparent;
+            border-left: none;
+            border-right: none;
+            border-bottom: none;
+            border-radius: 10px;
+            color: #ef4444;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            padding: 11px 14px;
+            text-align: left;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-logout-sidebar:hover { background: #fff1f2; }
+
+        /* Main content */
+        .dashboard-main {
+            padding: 32px 36px;
+            overflow-y: auto;
+        }
+
+        /* Tab sections */
+        .dash-section { display: none; }
+        .dash-section.active { display: block; }
+
+        /* Stats grid */
+        .dash-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .dash-stat-card {
+            background: #fff;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 16px;
+            padding: 24px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .dash-stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16,185,129,0.12);
+        }
+
+        .dash-stat-icon { font-size: 1.8rem; }
+        .dash-stat-value { font-size: 2.2rem; font-weight: 700; color: #10B981; line-height: 1; }
+        .dash-stat-label { font-size: 0.82rem; color: var(--text-secondary, #6b7280); font-weight: 500; }
+
+        /* Quick actions */
+        .dash-quick-actions { margin-top: 24px; }
+        .dash-quick-actions h3 { font-size: 1.05rem; font-weight: 600; margin-bottom: 16px; color: var(--text-primary, #111827); }
+
+        .quick-actions-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+        }
+
+        .quick-action-card {
+            background: #fff;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 12px;
+            padding: 18px 14px;
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-primary, #111827);
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-action-card:hover {
+            border-color: #10B981;
+            color: #10B981;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(16,185,129,0.15);
+        }
+
+        /* Section headers */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary, #111827);
+            margin: 0;
+        }
+
+        .section-meta {
+            font-size: 0.8rem;
+            color: var(--text-secondary, #6b7280);
+        }
+
+        /* History cards */
+        .history-list { display: flex; flex-direction: column; gap: 14px; }
+
+        .history-card {
+            background: #fff;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: start;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s;
+            animation: fadeInUp 0.3s ease both;
+        }
+
+        .history-card:hover { box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+
+
+
+        .history-card-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary, #111827);
+            margin: 0 0 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-card-date {
+            font-size: 0.76rem;
+            color: var(--text-secondary, #9ca3af);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .history-card-details {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .detail-chip {
+            background: #f0fdf4;
+            color: #065f46;
+            border: 1px solid #a7f3d0;
+            border-radius: 6px;
+            padding: 3px 10px;
+            font-size: 0.78rem;
+            font-weight: 500;
+        }
+
+        .detail-chip.soil  { background: #fff7ed; color: #92400e; border-color: #fed7aa; }
+        .detail-chip.season { background: #eff6ff; color: #1e40af; border-color: #bfdbfe; }
+        .detail-chip.profit { background: #fef3c7; color: #78350f; border-color: #fde68a; }
+
+        .btn-delete {
+            background: transparent;
+            border: 1px solid #fecaca;
+            color: #ef4444;
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.78rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-delete:hover { background: #fef2f2; border-color: #ef4444; }
+
+        /* Scheme cards in dashboard */
+        .saved-scheme-card {
+            background: #fff;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 14px;
+            padding: 18px 20px;
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 12px;
+            align-items: start;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s;
+            animation: fadeInUp 0.3s ease both;
+        }
+
+        .saved-scheme-card:hover { box-shadow: 0 4px 16px rgba(16,185,129,0.1); }
+
+        .saved-scheme-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary, #111827);
+            margin: 0 0 6px;
+        }
+
+        .saved-scheme-date {
+            font-size: 0.76rem;
+            color: #9ca3af;
+            margin-bottom: 10px;
+        }
+
+        .saved-scheme-desc {
+            font-size: 0.83rem;
+            color: var(--text-secondary, #6b7280);
+            line-height: 1.5;
+            margin: 0 0 12px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .saved-scheme-actions { display: flex; gap: 8px; align-items: center; }
+
+        .btn-apply-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 8px;
+            padding: 6px 14px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn-apply-link:hover { opacity: 0.88; }
+
+        /* Profile section */
+        .profile-card {
+            background: #fff;
+            border: 1px solid var(--border-color, #e5e7eb);
+            border-radius: 16px;
+            padding: 28px 28px;
+            max-width: 640px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+        }
+
+        .profile-field {
+            display: grid;
+            grid-template-columns: 160px 1fr;
+            align-items: start;
+            padding: 14px 0;
+            border-bottom: 1px solid #f3f4f6;
+            gap: 12px;
+        }
+
+        .profile-field:last-child { border-bottom: none; }
+
+        .profile-label {
+            font-size: 0.82rem;
+            color: var(--text-secondary, #6b7280);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding-top: 2px;
+        }
+
+        .profile-value {
+            font-size: 0.95rem;
+            color: var(--text-primary, #111827);
+            font-weight: 500;
+        }
+
+        /* Empty states */
+        .empty-state {
+            text-align: center;
+            padding: 56px 24px;
+            color: var(--text-secondary, #6b7280);
+        }
+
+        .empty-state-icon { font-size: 3rem; margin-bottom: 12px; display: block; }
+        .empty-state h4 { font-size: 1rem; font-weight: 600; margin: 0 0 8px; color: #374151; }
+        .empty-state p { font-size: 0.87rem; margin: 0 0 20px; }
+
+        .btn-empty-action {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            padding: 10px 22px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-size: 0.87rem;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+
+        .btn-empty-action:hover { opacity: 0.88; }
+
+        /* Error state */
+        .error-state {
+            background: #fff1f2;
+            border: 1px solid #fecaca;
+            border-radius: 12px;
+            padding: 16px 20px;
+            color: #b91c1c;
+            font-size: 0.87rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Loading spinner */
+        .dash-loading {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #6b7280;
+            font-size: 0.87rem;
+            padding: 24px 0;
+        }
+
+        .spinner-sm {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #d1d5db;
+            border-top-color: #10B981;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(12px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Last updated */
+        .last-updated {
+            font-size: 0.76rem;
+            color: #9ca3af;
+            text-align: right;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 6px;
+        }
+
+        .last-updated-dot {
+            width: 6px;
+            height: 6px;
+            background: #10B981;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* Section page header */
+        .dash-page-title { font-size: 1.5rem; font-weight: 700; margin: 0 0 24px; color: #111827; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .dashboard-layout { grid-template-columns: 1fr; }
+            .dashboard-sidebar { position: relative; height: auto; top: 0; }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+            .dash-stats-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .dashboard-main { padding: 20px 16px; }
+            .dash-stats-grid { grid-template-columns: 1fr; }
+            .quick-actions-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        /* Schemes.js save button styling (applies on schemes.html too, scoped by class) */
+        .btn-save-scheme {
+            background: transparent;
+            border: 1.5px solid #10B981;
+            color: #10B981;
+            border-radius: 8px;
+            padding: 7px 14px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-save-scheme:hover:not(:disabled) {
+            background: #10B981;
+            color: #fff;
+        }
+
+        .btn-save-scheme.saved,
+        .btn-save-scheme:disabled {
+            border-color: #a7f3d0;
+            color: #059669;
+            cursor: default;
+        }
+
+        .scheme-card-footer {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        /* ===== [PHOTO-STYLES-START] Profile Photo Styles ===== */
+
+        /* Sidebar Avatar */
+        .profile-avatar-wrap {
+            text-align: center;
+            padding: 20px 0 24px;
+            border-bottom: 1px solid var(--border-color, #e5e7eb);
+            margin-bottom: 20px;
+        }
+
+        /* Inner container that wraps ONLY the circle + camera btn */
+        .profile-avatar-ring {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+
+        .profile-avatar {
+            width: 88px;
+            height: 88px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #10B981;
+            cursor: pointer;
+            position: relative;
+            background: #f0fdf4;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .profile-avatar:hover {
+            border-color: #059669;
+            box-shadow: 0 0 0 4px rgba(16,185,129,0.15);
+        }
+
+        .profile-avatar img,
+        .profile-avatar canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Camera icon: bottom-right of the circle, overlapping border */
+        .avatar-edit-btn {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #fff;
+            border: 2px solid #10B981;
+            font-size: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+            transition: background 0.2s, transform 0.2s;
+            z-index: 2;
+            line-height: 1;
+        }
+
+        .avatar-edit-btn:hover {
+            background: #f0fdf4;
+            transform: scale(1.12);
+        }
+
+        .profile-name {
+            font-weight: 600;
+            font-size: 0.98rem;
+            color: var(--text-primary, #111827);
+            margin-bottom: 2px;
+        }
+
+        .profile-mobile {
+            font-size: 0.78rem;
+            color: var(--text-secondary, #6b7280);
+            margin-bottom: 8px;
+        }
+
+        .profile-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            font-size: 0.72rem;
+            font-weight: 600;
+            padding: 3px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Navbar mini avatar */
+        .nav-avatar {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            overflow: hidden;
+            vertical-align: middle;
+            margin-right: 6px;
+            border: 1.5px solid #10B981;
+            background: #f0fdf4;
+            flex-shrink: 0;
+        }
+
+        .nav-avatar img,
+        .nav-avatar canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Bottom sheet upload modal */
+        .photo-sheet-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .photo-sheet-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        @media (min-width: 600px) {
+            .photo-sheet-overlay { align-items: center; }
+            .photo-sheet { border-radius: 16px !important; max-width: 360px; width: 100%; }
+        }
+
+        .photo-sheet {
+            background: #fff;
+            border-radius: 20px 20px 0 0;
+            padding: 24px 20px 32px;
+            width: 100%;
+            transform: translateY(30px);
+            transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+            box-shadow: 0 -4px 32px rgba(0,0,0,0.12);
+        }
+
+        .photo-sheet-overlay.open .photo-sheet {
+            transform: translateY(0);
+        }
+
+        .photo-sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: #d1d5db;
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+
+        .photo-sheet-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            text-align: center;
+        }
+
+        .photo-sheet-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 16px;
+            border: none;
+            background: transparent;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.2s;
+            text-align: left;
+        }
+
+        .photo-sheet-btn:hover { background: #f9fafb; }
+
+        .photo-sheet-btn.remove-btn { color: #ef4444; }
+        .photo-sheet-btn.cancel-btn { color: #6b7280; margin-top: 4px; }
+
+        .photo-sheet-divider {
+            height: 1px;
+            background: #f3f4f6;
+            margin: 8px 0;
+        }
+
+        /* Crop modal */
+        .crop-modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.85);
+            z-index: 1100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s;
+        }
+
+        .crop-modal-overlay.open {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .crop-modal-inner {
+            background: #111827;
+            border-radius: 16px;
+            padding: 20px;
+            max-width: 480px;
+            width: 95%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .crop-modal-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #f9fafb;
+            text-align: center;
+        }
+
+        .crop-canvas-wrap {
+            width: 100%;
+            max-height: 360px;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+        }
+
+        .crop-canvas-wrap img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .crop-modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-crop-use {
+            flex: 1;
+            padding: 12px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn-crop-use:hover { opacity: 0.9; }
+
+        .btn-crop-cancel {
+            flex: 1;
+            padding: 12px;
+            background: #374151;
+            color: #d1d5db;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-crop-cancel:hover { background: #4b5563; }
+
+        /* Profile form styles */
+        .profile-form-section {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .profile-photo-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding-bottom: 24px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+
+        .profile-photo-large {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid #10B981;
+            background: #f0fdf4;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .profile-photo-large img,
+        .profile-photo-large canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        .btn-change-photo {
+            padding: 8px 16px;
+            border: 1.5px solid #10B981;
+            color: #10B981;
+            background: transparent;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.83rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-change-photo:hover {
+            background: #10B981;
+            color: #fff;
+        }
+
+        .profile-form-grid {
+            display: grid;
+            gap: 16px;
+        }
+
+        .profile-form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .profile-form-group label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .profile-form-group input,
+        .profile-form-group select {
+            padding: 10px 14px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            color: #111827;
+            background: #fff;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        .profile-form-group input:focus,
+        .profile-form-group select:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 0 3px rgba(16,185,129,0.1);
+        }
+
+        .profile-form-group input:read-only {
+            background: #f9fafb;
+            color: #6b7280;
+        }
+
+        .profile-form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .profile-form-divider {
+            height: 1px;
+            background: #f3f4f6;
+            margin: 8px 0;
+        }
+
+        .profile-readonly-note {
+            font-size: 0.75rem;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        .profile-lang-radios {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            padding-top: 4px;
+        }
+
+        .profile-lang-radio {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .profile-lang-radio input[type="radio"] {
+            width: auto;
+            accent-color: #10B981;
+        }
+
+        .profile-member-since {
+            font-size: 0.82rem;
+            color: #9ca3af;
+            padding-top: 8px;
+            border-top: 1px solid #f3f4f6;
+            margin-top: 8px;
+        }
+
+        .btn-save-profile {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #10B981, #059669);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-save-profile:hover { opacity: 0.9; transform: translateY(-1px); }
+        .btn-save-profile:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        /* ===== [PHOTO-STYLES-END] ===== */
+    </style>
+</head>
+
+<body>
+    <!-- ===== [AUTH-GUARD-START] ===== -->
+    <script>
+    /* Auth guard: runs synchronously before any content renders.
+       Supabase session is checked asynchronously in dashboard.js,
+       but we also handle the immediate redirect for ?requireLogin=1 */
+    (function() {
+        const params = new URLSearchParams(location.search);
+        if (params.get('requireLogin') === '1') {
+            // Already going to be redirected by dashboard.js, just hide briefly
+            document.documentElement.style.visibility = 'hidden';
+        }
+    })();
+    </script>
+    <!-- ===== [AUTH-GUARD-END] ===== -->
+
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand"><span class="brand-icon">🌾</span><a href="index.html" class="brand-text">Agri<span
+                        class="brand-accent">Hub</span></a></div>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" data-i18n="nav_home">Home</a>
+                <a href="fertilizer.html" data-i18n="nav_fertilizer">Fertilizer</a>
+                <a href="polyhouse.html" data-i18n="nav_polyhouse">Polyhouse</a>
+                <a href="schemes.html" data-i18n="nav_schemes">Schemes</a>
+                <a href="weather.html" data-i18n="nav_weather">Weather</a>
+                <a href="crop-advisor.html" data-i18n="nav_advisor">Crop Advisor</a>
+                <a href="ai-assistant.html" data-i18n="nav_ai_assistant">AI Assistant</a>
+                <a href="pesticide.html" data-i18n="nav_pesticide">Pesticides</a>
+            </nav>
+            <div class="nav-actions">
+                <select id="languageSelector" class="lang-select" aria-label="Select Language">
+                    <option value="en">🌐 English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                </select>
+                <div id="authButtons" class="hidden"><button class="btn-nav-outline" id="openLogin" data-i18n="nav_login">Login</button></div>
+                <div id="userMenu" class="user-menu">
+                    <span class="user-greeting" id="userGreeting">
+                        <span id="navAvatar" class="nav-avatar"></span>
+                        <i data-lucide="hand-metal" class="ah-icon"></i> Hello, <span id="navFirstName">Farmer</span>
+                    </span>
+                    <button class="btn-nav-outline" id="logoutBtn" data-i18n="nav_logout">Logout</button>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger"
+                aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </header>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div class="profile-avatar-wrap" id="sidebarAvatarWrap">
+                <div class="profile-avatar-ring">
+                    <div class="profile-avatar" id="sidebarAvatar" title="Click to change photo"></div>
+                    <button class="avatar-edit-btn" id="avatarEditBtn" title="Change photo" aria-label="Change photo"><i data-lucide="camera" style="width:13px;height:13px;"></i></button>
+                </div>
+                <div class="profile-name" id="sidebarName">--</div>
+                <div class="profile-mobile" id="sidebarMobile">--</div>
+                <div class="profile-badge"><i data-lucide="wheat" class="ah-icon ah-green" style="width:13px;height:13px;"></i> Farmer</div>
+            </div>
+
+            <nav class="dash-nav">
+                <button class="dash-nav-link active" data-section="overview" id="nav-overview" data-i18n="dash_tab_overview"><i data-lucide="layout-dashboard" class="ah-icon ah-blue"></i> Overview</button>
+                <button class="dash-nav-link" data-section="calculations" id="nav-calculations" data-i18n="dash_tab_calcs"><i data-lucide="flask-conical" class="ah-icon ah-green"></i> My Calculations</button>
+                <button class="dash-nav-link" data-section="crops" id="nav-crops" data-i18n="dash_tab_advisor"><i data-lucide="leaf" class="ah-icon ah-green"></i> Crop History</button>
+                <button class="dash-nav-link" data-section="saved" id="nav-saved" data-i18n="dash_tab_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i> Saved Schemes</button>
+                <button class="dash-nav-link" data-section="profile" id="nav-profile" data-i18n="dash_tab_profile"><i data-lucide="user" class="ah-icon ah-gray"></i> Profile</button>
+            </nav>
+            <button class="btn-logout-sidebar" id="dashLogout" data-i18n="nav_logout"><i data-lucide="log-out" class="ah-icon ah-red"></i> Logout</button>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-main">
+            <!-- Last updated -->
+            <div class="last-updated" id="lastUpdated" style="display:none;">
+                <span class="last-updated-dot"></span>
+                <span id="lastUpdatedText">Last updated: just now</span>
+            </div>
+
+            <!-- ── OVERVIEW SECTION ── -->
+            <section class="dash-section active" id="section-overview">
+                <h1 class="dash-page-title" data-i18n="dash_overview_title"><i data-lucide="layout-dashboard" class="ah-icon ah-blue"></i>Dashboard Overview</h1>
+                <div class="dash-stats-grid">
+                    <div class="dash-stat-card">
+                        <span class="dash-stat-icon"><i data-lucide="flask-conical" style="width:28px;height:28px;color:#10B981;"></i></span>
+                        <span class="dash-stat-value" id="stat-calculations">0</span>
+                        <span class="dash-stat-label" data-i18n="dash_stat_calcs">Calculations Done</span>
+                    </div>
+                    <div class="dash-stat-card">
+                        <span class="dash-stat-icon"><i data-lucide="leaf" style="width:28px;height:28px;color:#10B981;"></i></span>
+                        <span class="dash-stat-value" id="stat-crops">0</span>
+                        <span class="dash-stat-label" data-i18n="dash_stat_crops">Crops Analyzed</span>
+                    </div>
+                    <div class="dash-stat-card">
+                        <span class="dash-stat-icon"><i data-lucide="landmark" style="width:28px;height:28px;color:#10B981;"></i></span>
+                        <span class="dash-stat-value" id="stat-schemes">0</span>
+                        <span class="dash-stat-label" data-i18n="dash_stat_schemes">Saved Schemes</span>
+                    </div>
+                </div>
+                <div class="dash-quick-actions">
+                    <h3 data-i18n="dash_quick_actions">Quick Actions</h3>
+                    <div class="quick-actions-grid">
+                        <a href="ai-assistant.html" class="quick-action-card"><i data-lucide="bot" class="ah-icon-lg ah-pink"></i><span data-i18n="nav_ai_assistant">Kisan AI Assistant</span></a>
+                        <a href="fertilizer.html" class="quick-action-card"><i data-lucide="leaf" class="ah-icon-lg ah-green"></i><span data-i18n="nav_fertilizer">New Calculation</span></a>
+                        <a href="crop-advisor.html" class="quick-action-card"><i data-lucide="brain" class="ah-icon-lg ah-purple"></i><span data-i18n="nav_advisor">Get Crop Advice</span></a>
+                        <a href="weather.html" class="quick-action-card"><i data-lucide="cloud-sun" class="ah-icon-lg ah-blue"></i><span data-i18n="nav_weather">Check Weather</span></a>
+                        <a href="schemes.html" class="quick-action-card"><i data-lucide="file-text" class="ah-icon-lg ah-yellow"></i><span data-i18n="nav_schemes">Browse Schemes</span></a>
+                        <a href="pesticide.html" class="quick-action-card"><i data-lucide="shield-alert" class="ah-icon-lg ah-red"></i><span data-i18n="nav_pesticide">Pesticide Safety</span></a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── MY CALCULATIONS SECTION ── -->
+            <section class="dash-section" id="section-calculations">
+                <div class="section-header">
+                    <h2 class="section-title" data-i18n="dash_tab_calcs"><i data-lucide="flask-conical" class="ah-icon ah-green"></i>My Calculations</h2>
+                    <span class="section-meta">Latest 10 records</span>
+                </div>
+                <div id="calculations-list">
+                    <div class="dash-loading">
+                        <div class="spinner-sm"></div> Loading calculations…
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── CROP HISTORY SECTION ── -->
+            <section class="dash-section" id="section-crops">
+                <div class="section-header">
+                    <h2 class="section-title" data-i18n="dash_tab_advisor"><i data-lucide="leaf" class="ah-icon ah-green"></i>Crop Advisor History</h2>
+                    <span class="section-meta">Latest 10 records</span>
+                </div>
+                <div id="crops-list">
+                    <div class="dash-loading">
+                        <div class="spinner-sm"></div> Loading crop history…
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── SAVED SCHEMES SECTION ── -->
+            <section class="dash-section" id="section-saved">
+                <div class="section-header">
+                    <h2 class="section-title" data-i18n="dash_tab_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i>Saved Schemes</h2>
+                    <a href="schemes.html" style="font-size:0.83rem; color:#10B981; text-decoration:none; font-weight:600;">+ Browse more</a>
+                </div>
+                <div id="saved-list">
+                    <div class="dash-loading">
+                        <div class="spinner-sm"></div> Loading saved schemes…
+                    </div>
+                </div>
+            </section>
+
+            <!-- ── PROFILE SECTION ── -->
+            <section class="dash-section" id="section-profile">
+                <h2 class="section-title" style="margin-bottom:24px;" data-i18n="dash_tab_profile"><i data-lucide="user" class="ah-icon ah-gray"></i>My Profile</h2>
+                <!-- [PHOTO-REPLACED: "Loading profile…" spinner — now full profile form] -->
+                <div class="profile-card" id="profile-card">
+                    <div class="dash-loading">
+                        <div class="spinner-sm"></div> Loading profile…
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- ===== [PHOTO-HTML-START] Photo Upload Bottom Sheet ===== -->
+    <div class="photo-sheet-overlay" id="photoSheetOverlay">
+        <div class="photo-sheet">
+            <div class="photo-sheet-handle"></div>
+            <div class="photo-sheet-title">Profile Photo</div>
+            <button class="photo-sheet-btn" id="optCamera">
+                <i data-lucide="camera" class="ah-icon-lg"></i> <span data-i18n="take_photo">Take Photo</span>
+            </button>
+            <button class="photo-sheet-btn" id="optGallery">
+                <i data-lucide="image" class="ah-icon-lg"></i> <span data-i18n="choose_gallery">Choose from Gallery</span>
+            </button>
+            <div class="photo-sheet-divider"></div>
+            <button class="photo-sheet-btn remove-btn" id="optRemove" style="display:none;">
+                <i data-lucide="trash-2" class="ah-icon-lg" style="color:#dc2626;"></i> <span data-i18n="remove_photo">Remove Photo</span>
+            </button>
+            <button class="photo-sheet-btn cancel-btn" id="optCancel">
+                <i data-lucide="x" class="ah-icon"></i> Cancel
+            </button>
+        </div>
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" accept="image/*" capture="user" id="cameraInput" hidden>
+    <input type="file" accept="image/jpeg,image/png,image/webp" id="galleryInput" hidden>
+
+    <!-- Crop Modal -->
+    <div class="crop-modal-overlay" id="cropModalOverlay">
+        <div class="crop-modal-inner">
+            <div class="crop-modal-title"><i data-lucide="crop" class="ah-icon"></i> Crop your photo</div>
+            <div class="crop-canvas-wrap">
+                <img id="cropImage" src="" alt="Crop preview">
+            </div>
+            <div class="crop-modal-actions">
+                <button class="btn-crop-use" id="btnUseCrop"><i data-lucide="check" class="ah-icon"></i>Use This Photo</button>
+                <button class="btn-crop-cancel" id="btnCancelCrop"><i data-lucide="x" class="ah-icon"></i>Cancel</button>
+            </div>
+        </div>
+    </div>
+    <!-- ===== [PHOTO-HTML-END] ===== -->
+
+    <div class="toast-container" id="toastContainer"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/translations.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ai-assistant.js"></script>
+    <script src="assets/js/dashboard.js"></script>
+
+    <!-- Cropper.js — dashboard only -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+
+    <!-- ===== [PHOTO-SCRIPT-START] Profile Photo Logic ===== -->
+    <script>
+    /* ══════════════════════════════════════════════════════
+       AgriHub Profile Photo Upload — Surgical Addition
+       Storage: localStorage key 'agrihub_photo_{userId}'
+       Dependencies: Cropper.js (CDN, loaded above)
+    ══════════════════════════════════════════════════════ */
+
+    let _cropperInstance = null;
+    let _currentSupabaseUser = null; // set by dashboard.js init
+
+    /* ── Initials Avatar Generator ── */
+    function generateInitialsAvatar(name, size) {
+        const COLORS = [
+            '#2d8a4e','#1a7a3c','#0d6e2e','#5b8a3c','#3a7a5e',
+            '#2d6b8a','#1a5f7a','#4a6b2d','#7a5b2d','#6b2d5b'
+        ];
+        let hash = 0;
+        for (let i = 0; i < name.length; i++) hash = name.charCodeAt(i) + ((hash << 5) - hash);
+        const color = COLORS[Math.abs(hash) % COLORS.length];
+
+        const canvas = document.createElement('canvas');
+        canvas.width = canvas.height = size;
+        const ctx = canvas.getContext('2d');
+
+        // Circle background
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(size/2, size/2, size/2, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Initials
+        const initials = name.trim().split(/\s+/).map(w => w[0]).slice(0, 2).join('').toUpperCase();
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.font = `bold ${Math.floor(size * 0.36)}px sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(initials, size/2, size/2);
+
+        return canvas;
+    }
+
+    /** Format mobile: "9876543210" → "98765 43210" */
+    function formatMobileDisplay(mobile) {
+        const m = String(mobile).replace(/\D/g, '');
+        if (m.length !== 10) return m;
+        return m.slice(0,5) + ' ' + m.slice(5);
+    }
+
+    /** Render avatar (img or canvas) into a container element */
+    function renderAvatar(container, name, size, photoBase64) {
+        container.innerHTML = '';
+        if (photoBase64) {
+            const img = document.createElement('img');
+            img.src = photoBase64;
+            img.alt = name + ' avatar';
+            container.appendChild(img);
+        } else if (name) {
+            const canvas = generateInitialsAvatar(name, size);
+            container.appendChild(canvas);
+        }
+    }
+
+    /** Refresh both sidebar and navbar avatars */
+    function refreshAvatars(user, photoBase64) {
+        if (!user) return;
+        const name = user.user_metadata?.full_name
+                  || localStorage.getItem('agrihub_user_name')
+                  || 'Farmer';
+        const mobile = user.user_metadata?.mobile_number || '';
+        const photo = photoBase64 !== undefined
+            ? photoBase64
+            : (user.id ? localStorage.getItem('agrihub_photo_' + user.id) : null);
+
+        // Sidebar avatar
+        const sidebarAvatar = document.getElementById('sidebarAvatar');
+        if (sidebarAvatar) renderAvatar(sidebarAvatar, name, 88, photo);
+
+        const sidebarName = document.getElementById('sidebarName');
+        if (sidebarName) sidebarName.textContent = name;
+
+        const sidebarMobile = document.getElementById('sidebarMobile');
+        if (sidebarMobile && mobile) sidebarMobile.textContent = '+91 ' + formatMobileDisplay(mobile);
+
+        // Navbar avatar
+        const navAvatar = document.getElementById('navAvatar');
+        if (navAvatar) renderAvatar(navAvatar, name, 28, photo);
+
+        const navFirstName = document.getElementById('navFirstName');
+        if (navFirstName) navFirstName.textContent = name.split(' ')[0];
+
+        // Profile page large avatar (if visible)
+        const profilePageAvatar = document.getElementById('profilePageAvatar');
+        if (profilePageAvatar) renderAvatar(profilePageAvatar, name, 90, photo);
+
+        // Show/hide remove button in sheet
+        const optRemove = document.getElementById('optRemove');
+        if (optRemove) optRemove.style.display = photo ? 'flex' : 'none';
+    }
+
+    /* ── Compress + Save Photo ── */
+    function compressAndSavePhoto(croppedCanvas, userId, userName) {
+        let base64 = croppedCanvas.toDataURL('image/jpeg', 0.75);
+        // Reduce quality if too large
+        if (base64.length > 100000) {
+            base64 = croppedCanvas.toDataURL('image/jpeg', 0.5);
+        }
+        localStorage.setItem('agrihub_photo_' + userId, base64);
+        return base64;
+    }
+
+    /* ── Open / Close Photo Sheet ── */
+    function openPhotoSheet() {
+        const overlay = document.getElementById('photoSheetOverlay');
+        if (overlay) {
+            overlay.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closePhotoSheet() {
+        const overlay = document.getElementById('photoSheetOverlay');
+        if (overlay) {
+            overlay.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+    }
+
+    /* ── Open / Close Crop Modal ── */
+    function openCropModal(imageSrc) {
+        const overlay = document.getElementById('cropModalOverlay');
+        const img = document.getElementById('cropImage');
+        if (!overlay || !img) return;
+
+        // Destroy any existing cropper
+        if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+
+        img.src = imageSrc;
+        overlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+
+        // Init Cropper.js after image loads
+        img.onload = () => {
+            _cropperInstance = new Cropper(img, {
+                aspectRatio: 1,
+                viewMode: 1,
+                dragMode: 'move',
+                autoCropArea: 0.8,
+                responsive: true,
+                checkOrientation: true,
+                guides: false,
+                background: false,
+            });
+        };
+    }
+
+    function closeCropModal() {
+        const overlay = document.getElementById('cropModalOverlay');
+        if (overlay) overlay.classList.remove('open');
+        document.body.style.overflow = '';
+        if (_cropperInstance) { _cropperInstance.destroy(); _cropperInstance = null; }
+    }
+
+    /* ── Handle File Input ── */
+    function handleFileInput(file) {
+        if (!file) return;
+        closePhotoSheet();
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            openCropModal(e.target.result);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    /* ── Initialize Photo Upload UI ── */
+    function initPhotoUpload(user) {
+        _currentSupabaseUser = user;
+
+        // Avatar click → open sheet
+        document.getElementById('sidebarAvatar')?.addEventListener('click', openPhotoSheet);
+        document.getElementById('avatarEditBtn')?.addEventListener('click', openPhotoSheet);
+
+        // Sheet buttons
+        document.getElementById('optCamera')?.addEventListener('click', () => {
+            document.getElementById('cameraInput').click();
+        });
+
+        document.getElementById('optGallery')?.addEventListener('click', () => {
+            document.getElementById('galleryInput').click();
+        });
+
+        document.getElementById('optRemove')?.addEventListener('click', () => {
+            if (!user?.id) return;
+            if (confirm('Remove your profile photo?')) {
+                localStorage.removeItem('agrihub_photo_' + user.id);
+                refreshAvatars(user, null);
+                closePhotoSheet();
+                showToast('Profile photo removed.', 'info');
+            }
+        });
+
+        document.getElementById('optCancel')?.addEventListener('click', closePhotoSheet);
+
+        // Close sheet on overlay click
+        document.getElementById('photoSheetOverlay')?.addEventListener('click', (e) => {
+            if (e.target === document.getElementById('photoSheetOverlay')) closePhotoSheet();
+        });
+
+        // File inputs
+        document.getElementById('cameraInput')?.addEventListener('change', (e) => {
+            handleFileInput(e.target.files[0]);
+            e.target.value = ''; // reset
+        });
+
+        document.getElementById('galleryInput')?.addEventListener('change', (e) => {
+            handleFileInput(e.target.files[0]);
+            e.target.value = '';
+        });
+
+        // Crop modal buttons
+        document.getElementById('btnUseCrop')?.addEventListener('click', () => {
+            if (!_cropperInstance || !user?.id) return;
+            const canvas = _cropperInstance.getCroppedCanvas({ width: 300, height: 300 });
+            const base64 = compressAndSavePhoto(canvas, user.id, user.user_metadata?.full_name || 'Farmer');
+            closeCropModal();
+            refreshAvatars(user, base64);
+            showToast('✅ Profile photo updated!', 'success');
+        });
+
+        document.getElementById('btnCancelCrop')?.addEventListener('click', () => {
+            closeCropModal();
+            openPhotoSheet();
+        });
+    }
+
+    /* ── Build Profile Form ── */
+    function buildProfileForm(user) {
+        const container = document.getElementById('profile-card');
+        if (!container) return;
+
+        const name    = user.user_metadata?.full_name || localStorage.getItem('agrihub_user_name') || '';
+        const mobile  = user.user_metadata?.mobile_number || '';
+        const photo   = user.id ? localStorage.getItem('agrihub_photo_' + user.id) : null;
+        const created = user.created_at ? new Date(user.created_at).toLocaleDateString('en-IN', {
+            day: '2-digit', month: 'long', year: 'numeric'
+        }) : 'Unknown';
+
+        // Profile data from localStorage (extended fields)
+        let profileExt = {};
+        try { profileExt = JSON.parse(localStorage.getItem('agrihub_profile_ext_' + user.id) || '{}'); } catch(_) {}
+
+        const INDIAN_STATES = [
+            '',
+            'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
+            'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
+            'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab',
+            'Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh','Uttarakhand',
+            'West Bengal','Andaman and Nicobar Islands','Chandigarh','Dadra and Nagar Haveli and Daman and Diu',
+            'Delhi','Jammu and Kashmir','Ladakh','Lakshadweep','Puducherry'
+        ];
+
+        const CROPS = [
+            '','Wheat','Rice (Paddy)','Maize (Corn)','Sugarcane','Cotton','Soybean','Groundnut',
+            'Sunflower','Jowar (Sorghum)','Bajra (Pearl Millet)','Tur (Pigeon Pea)','Gram (Chickpea)',
+            'Moong (Green Gram)','Urad (Black Gram)','Lentil (Masoor)','Mustard','Sesame',
+            'Potato','Onion','Tomato'
+        ];
+
+        container.innerHTML = `
+        <div class="profile-form-section">
+            <!-- Photo row -->
+            <div class="profile-photo-row">
+                <div class="profile-photo-large" id="profilePageAvatar"></div>
+                <div>
+                    <button class="btn-change-photo" id="profileChangePhoto" data-i18n="change_photo">📷 Change Photo</button>
+                    <div style="font-size:0.75rem; color:#9ca3af; margin-top:6px;">JPG, PNG or WebP · Max 5MB</div>
+                </div>
+            </div>
+
+            <!-- Form rows -->
+            <div class="profile-form-grid">
+                <div class="profile-form-group">
+                    <label for="pfName">Full Name *</label>
+                    <input type="text" id="pfName" value="${escapeHtml(name)}" placeholder="Your full name" autocomplete="name">
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="pfMobile">Mobile Number</label>
+                    <input type="tel" id="pfMobile" value="${escapeHtml(mobile ? '+91 ' + formatMobileDisplay(mobile) : '')}" readonly>
+                    <div class="profile-readonly-note">🔒 Mobile number cannot be changed</div>
+                </div>
+
+                <div class="profile-form-row">
+                    <div class="profile-form-group">
+                        <label for="pfVillage">Village / Town</label>
+                        <input type="text" id="pfVillage" value="${escapeHtml(profileExt.village||'')}" placeholder="Your village or town">
+                    </div>
+                    <div class="profile-form-group">
+                        <label for="pfDistrict">District</label>
+                        <input type="text" id="pfDistrict" value="${escapeHtml(profileExt.district||'')}" placeholder="Your district">
+                    </div>
+                </div>
+
+                <div class="profile-form-row">
+                    <div class="profile-form-group">
+                        <label for="pfState">State</label>
+                        <select id="pfState">
+                            ${INDIAN_STATES.map(s => `<option value="${s}" ${profileExt.state===s?'selected':''}>${s||'— Select State —'}</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="profile-form-group">
+                        <label for="pfLandSize">Land Size (acres)</label>
+                        <input type="number" id="pfLandSize" value="${profileExt.land_size||''}" min="0" step="0.5" placeholder="e.g. 2.5">
+                    </div>
+                </div>
+
+                <div class="profile-form-group">
+                    <label for="pfCrop">Primary Crop</label>
+                    <select id="pfCrop">
+                        ${CROPS.map(c => `<option value="${c}" ${profileExt.primary_crop===c?'selected':''}>${c||'— Select Crop —'}</option>`).join('')}
+                    </select>
+                </div>
+
+                <div class="profile-form-group">
+                    <label>Language Preference</label>
+                    <div class="profile-lang-radios">
+                        <label class="profile-lang-radio"><input type="radio" name="pfLang" value="en" ${(profileExt.lang||localStorage.getItem('agrihub_lang')||'en')==='en'?'checked':''}> English</label>
+                        <label class="profile-lang-radio"><input type="radio" name="pfLang" value="hi" ${(profileExt.lang||localStorage.getItem('agrihub_lang')||'en')==='hi'?'checked':''}> हिन्दी</label>
+                        <label class="profile-lang-radio"><input type="radio" name="pfLang" value="mr" ${(profileExt.lang||localStorage.getItem('agrihub_lang')||'en')==='mr'?'checked':''}> मराठी</label>
+                    </div>
+                </div>
+
+                <div class="profile-form-divider"></div>
+                <div class="profile-member-since">📅 Member since: ${created}</div>
+
+                <div id="profileSaveAlert" class="form-alert hidden"></div>
+                <button class="btn-save-profile" id="btnSaveProfile">
+                    💾 <span data-i18n="save_changes">Save Changes</span>
+                </button>
+            </div>
+        </div>`;
+
+        // Render avatar in profile page
+        const profilePageAvatar = document.getElementById('profilePageAvatar');
+        if (profilePageAvatar) renderAvatar(profilePageAvatar, name||'Farmer', 90, photo);
+
+        // Change photo from profile page
+        document.getElementById('profileChangePhoto')?.addEventListener('click', openPhotoSheet);
+
+        // Dirty state tracking
+        let formChanged = false;
+        container.querySelectorAll('input:not([readonly]), select').forEach(el => {
+            el.addEventListener('input', () => { formChanged = true; });
+            el.addEventListener('change', () => { formChanged = true; });
+        });
+
+        // Language radio → update app language
+        container.querySelectorAll('input[name="pfLang"]').forEach(radio => {
+            radio.addEventListener('change', () => {
+                if (radio.checked) {
+                    localStorage.setItem('agrihub_lang', radio.value);
+                    if (typeof applyTranslations === 'function') applyTranslations(radio.value);
+                    const selector = document.getElementById('languageSelector');
+                    if (selector) selector.value = radio.value;
+                }
+            });
+        });
+
+        // Unsaved changes warning
+        window.addEventListener('beforeunload', (e) => {
+            if (formChanged) {
+                e.preventDefault();
+                e.returnValue = 'You have unsaved changes. Leave?';
+            }
+        });
+
+        // Save
+        document.getElementById('btnSaveProfile')?.addEventListener('click', async () => {
+            const newName   = document.getElementById('pfName')?.value.trim();
+            const village   = document.getElementById('pfVillage')?.value.trim();
+            const district  = document.getElementById('pfDistrict')?.value.trim();
+            const state     = document.getElementById('pfState')?.value;
+            const landSize  = parseFloat(document.getElementById('pfLandSize')?.value) || null;
+            const crop      = document.getElementById('pfCrop')?.value;
+            const lang      = document.querySelector('input[name="pfLang"]:checked')?.value || 'en';
+
+            if (!newName || newName.length < 2) {
+                showFormAlertProfile('Name must be at least 2 characters.', 'error');
+                return;
+            }
+
+            const saveBtn = document.getElementById('btnSaveProfile');
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<div class="spinner-sm" style="border-top-color:#fff;display:inline-block;width:16px;height:16px;"></div> Saving...';
+
+            // Save extended profile locally
+            const ext = { village, district, state, land_size: landSize, primary_crop: crop, lang };
+            localStorage.setItem('agrihub_profile_ext_' + user.id, JSON.stringify(ext));
+            localStorage.setItem('agrihub_lang', lang);
+
+            // Update name in Supabase user metadata
+            try {
+                if (supabaseClient && newName !== name) {
+                    await supabaseClient.auth.updateUser({ data: { full_name: newName } });
+                    localStorage.setItem('agrihub_user_name', newName);
+                }
+                // Update user_profiles table
+                if (supabaseClient) {
+                    await supabaseClient.from('user_profiles').upsert({
+                        user_id: user.id,
+                        full_name: newName,
+                        mobile_number: user.user_metadata?.mobile_number || '',
+                    }, { onConflict: 'user_id' });
+                }
+            } catch(e) {
+                console.warn('[AgriHub] Profile save error:', e.message);
+            }
+
+            // Refresh sidebar + navbar
+            user.user_metadata = { ...(user.user_metadata||{}), full_name: newName };
+            refreshAvatars(user);
+
+            formChanged = false;
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '💾 <span data-i18n="save_changes">Save Changes</span>';
+            showFormAlertProfile('✅ Profile saved successfully!', 'success');
+            showToast('Profile saved! 🌾', 'success');
+        });
+
+        function showFormAlertProfile(msg, type) {
+            const el = document.getElementById('profileSaveAlert');
+            if (!el) return;
+            el.textContent = msg;
+            el.className = 'form-alert ' + type;
+            el.classList.remove('hidden');
+            setTimeout(() => el.classList.add('hidden'), 4000);
+        }
+    }
+
+    /* Helper used above */
+    function escapeHtml(str) {
+        if (!str) return '';
+        return String(str)
+            .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    /* ── Hook into dashboard.js DOMContentLoaded ── */
+    /* We expose initPhotoSystem() which dashboard.js calls after auth */
+    window.initPhotoSystem = function(user) {
+        _currentSupabaseUser = user;
+        const photo = user?.id ? localStorage.getItem('agrihub_photo_' + user.id) : null;
+        refreshAvatars(user, photo);
+        initPhotoUpload(user);
+        buildProfileForm(user);
+    };
+
+    </script>
+    <!-- ===== [PHOTO-SCRIPT-END] ===== -->
+
+    <!-- ===== [ICONS-INIT] Initialize Lucide icons ===== -->
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

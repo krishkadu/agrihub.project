@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="AgriHub Polyhouse & Protected Farming Hub — Setup cost calculator, 50% to 75% MIDH/NHM government subsidy estimator, high-value crop guide, and climate control advisory.">
+  <meta property="og:title" content="Polyhouse & Protected Cultivation — AgriHub">
+  <meta property="og:description"
+    content="Calculate polyhouse setup costs, MIDH/NHM government subsidies, crop ROI for Dutch roses, capsicum, cucumber, and get complete climate control guidelines.">
+  <meta property="og:image"
+    content="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1200&q=80">
+  <meta name="theme-color" content="#10B981">
+  <title>Polyhouse & Protected Cultivation — AgriHub</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏡</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500&family=Poppins:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+  <style>
+    .ah-icon { width: 16px; height: 16px; margin-right: 5px; vertical-align: middle; flex-shrink: 0; display: inline-block; }
+    .ah-icon-lg { width: 22px; height: 22px; }
+    .ah-green { color: #16a34a; }
+    .ah-blue { color: #3b82f6; }
+    .ah-purple { color: #7c3aed; }
+    .ah-yellow { color: #ca8a04; }
+    .ah-gray { color: #6b7280; }
+    .ah-orange { color: #ea580c; }
+    .ah-red { color: #ef4444; }
+    h1, h2, h3, h4 { font-family: 'Poppins', 'DM Sans', sans-serif; }
+
+    /* Polyhouse Custom Enhancements */
+    .poly-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-top: 24px;
+    }
+    .poly-stat-card {
+      background: #ffffff;
+      border: 1px solid #E2E8F0;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .poly-stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.08);
+    }
+    .poly-stat-num {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #059669;
+      font-family: 'Poppins', sans-serif;
+    }
+    .poly-stat-label {
+      font-size: 0.85rem;
+      color: #64748B;
+      margin-top: 4px;
+    }
+
+    .calc-row-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    @media (max-width: 640px) {
+      .calc-row-2 { grid-template-columns: 1fr; }
+    }
+
+    .subsidy-highlight-badge {
+      background: #ECFDF5;
+      color: #065F46;
+      border: 1px solid #A7F3D0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+
+    .financial-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      background: #F8FAFC;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .financial-summary-table th, 
+    .financial-summary-table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #E2E8F0;
+      font-size: 0.9rem;
+    }
+    .financial-summary-table th {
+      background: #F1F5F9;
+      color: #334155;
+      font-weight: 600;
+    }
+    .financial-summary-table tr:last-child td {
+      border-bottom: none;
+      font-weight: 700;
+      color: #059669;
+      background: #ECFDF5;
+      font-size: 1rem;
+    }
+
+    .crop-pill-btn {
+      padding: 8px 16px;
+      border: 1px solid #CBD5E1;
+      background: #fff;
+      border-radius: 24px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .crop-pill-btn.active, .crop-pill-btn:hover {
+      background: #10B981;
+      color: #fff;
+      border-color: #10B981;
+    }
+
+    .step-timeline {
+      position: relative;
+      padding-left: 28px;
+      margin-top: 20px;
+    }
+    .step-timeline::before {
+      content: '';
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      bottom: 6px;
+      width: 2px;
+      background: #CBD5E1;
+    }
+    .step-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+    .step-item::before {
+      content: '';
+      position: absolute;
+      left: -28px;
+      top: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: #10B981;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px #10B981;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="page-progress" id="pageProgress"></div>
+
+  <!-- ══════════ NAVBAR ══════════ -->
+  <header class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <span class="brand-icon">🌾</span>
+        <a href="index.html" class="brand-text">Agri<span class="brand-accent">Hub</span></a>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" data-i18n="nav_home"><i data-lucide="home" class="ah-icon ah-green"></i>Home</a>
+        <a href="fertilizer.html" data-i18n="nav_fertilizer"><i data-lucide="leaf" class="ah-icon ah-green"></i>Fertilizer</a>
+        <a href="polyhouse.html" class="active" data-i18n="nav_polyhouse"><i data-lucide="warehouse" class="ah-icon ah-green"></i>Polyhouse</a>
+        <a href="schemes.html" data-i18n="nav_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i>Schemes</a>
+        <a href="weather.html" data-i18n="nav_weather"><i data-lucide="cloud-sun" class="ah-icon ah-blue"></i>Weather</a>
+        <a href="crop-advisor.html" data-i18n="nav_advisor"><i data-lucide="brain" class="ah-icon ah-purple"></i>Crop Advisor</a>
+        <a href="ai-assistant.html" data-i18n="nav_ai_assistant"><i data-lucide="bot" class="ah-icon ah-pink"></i>AI Assistant</a>
+        <a href="pesticide.html" data-i18n="nav_pesticide"><i data-lucide="shield-alert" class="ah-icon ah-red"></i>Pesticides</a>
+      </nav>
+      <div class="nav-actions">
+        <select id="languageSelector" class="lang-select" aria-label="Select Language">
+          <option value="en">🌐 English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="mr">मराठी</option>
+        </select>
+        <div id="authButtons">
+          <button class="btn-nav-outline" id="openLogin">Login</button>
+          <button class="btn-nav-primary" id="openRegister">Register</button>
+        </div>
+        <div id="userMenu" class="user-menu hidden">
+          <span class="user-greeting" id="userGreeting">👋 Hello</span>
+          <a href="dashboard.html" class="btn-nav-outline">Dashboard</a>
+          <button class="btn-nav-outline" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <!-- ══════════ PAGE HERO ══════════ -->
+  <section class="page-hero">
+    <div class="hero-bg">
+      <img src="https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?auto=format&fit=crop&w=1920&q=80"
+        alt="Polyhouse farming and protected greenhouse crops" class="hero-img" loading="eager">
+      <div class="hero-overlay" style="background: linear-gradient(180deg, rgba(15,23,42,0.82) 0%, rgba(15,23,42,0.94) 100%);"></div>
+    </div>
+    <div class="page-hero-content animate-fade-up">
+      <div class="subsidy-highlight-badge" data-i18n="poly_subsidy_badge">
+        <i data-lucide="badge-percent" style="width:16px;height:16px;"></i> Govt. Subsidy 50% – 75% Available under MIDH / NHM
+      </div>
+      <h1 data-i18n="polyhouse_title"><i data-lucide="warehouse" class="ah-icon-lg ah-green"></i> Polyhouse & Protected Farming</h1>
+      <p data-i18n="polyhouse_subtitle">Complete guide to polyhouse setup, government subsidy calculation, high-value crop economics & microclimate control</p>
+    </div>
+  </section>
+
+  <!-- ══════════ MAIN WORKSPACE ══════════ -->
+  <div class="container" style="padding-bottom: 64px;">
+
+    <!-- TOP KPI HIGHLIGHTS -->
+    <div class="poly-grid animate-fade-up" style="margin-bottom: 32px;">
+      <div class="poly-stat-card">
+        <div class="poly-stat-num">3x – 5x</div>
+        <div class="poly-stat-label" data-i18n="poly_stat_yield">Higher Yield vs Open Field Cultivation</div>
+      </div>
+      <div class="poly-stat-card">
+        <div class="poly-stat-num">50% – 75%</div>
+        <div class="poly-stat-label" data-i18n="poly_stat_subsidy">Govt. Capital Subsidy (MIDH / NHB)</div>
+      </div>
+      <div class="poly-stat-card">
+        <div class="poly-stat-num">100%</div>
+        <div class="poly-stat-label" data-i18n="poly_stat_weather">Weather & Hailstorm Protection</div>
+      </div>
+      <div class="poly-stat-card">
+        <div class="poly-stat-num">2.5 Years</div>
+        <div class="poly-stat-label" data-i18n="poly_stat_payback">Average Project Investment Payback Period</div>
+      </div>
+    </div>
+
+    <!-- 1. POLYHOUSE COST & SUBSIDY CALCULATOR -->
+    <div class="calculator-card animate-fade-up" style="margin-bottom: 40px;" id="polyhouse-calc">
+      <div class="calc-header">
+        <h2 data-i18n="poly_calc_header"><i data-lucide="calculator" class="ah-icon ah-green"></i> Polyhouse Setup Cost & Subsidy Calculator</h2>
+        <p data-i18n="poly_calc_desc">Estimate complete project cost, government subsidy eligibility under MIDH/NHM, and farmer net contribution</p>
+      </div>
+
+      <form id="polyhouseForm">
+        <div class="calc-row-2">
+          <!-- Structure Type -->
+          <div class="form-group">
+            <label for="structureType" data-i18n="poly_struct_type">Polyhouse Structure Type</label>
+            <select id="structureType" required>
+              <option value="nvph" data-cost="935" selected>Naturally Ventilated Polyhouse (NVPH) — ₹935 / sq.m</option>
+              <option value="fan_pad" data-cost="1520">Climate-Controlled Hi-Tech Polyhouse (Fan & Pad) — ₹1,520 / sq.m</option>
+              <option value="shade_net" data-cost="710">Shade Net House (Tubular Structure) — ₹710 / sq.m</option>
+              <option value="tunnel" data-cost="360">Walk-in Poly Tunnel — ₹360 / sq.m</option>
+            </select>
+            <span style="font-size:0.75rem;color:#64748B;">Cost norms based on National Horticulture Mission (MIDH) standard benchmark rates</span>
+          </div>
+
+          <!-- Target Crop -->
+          <div class="form-group">
+            <label for="cropFocus" data-i18n="poly_crop_focus">Primary Target Crop</label>
+            <select id="cropFocus" required>
+              <option value="rose" data-rev="2800" data-op="900" selected>Dutch Roses (गुलाब) — Cut Flowers</option>
+              <option value="gerbera" data-rev="2600" data-op="850">Gerbera (जरबेरा) — Cut Flowers</option>
+              <option value="capsicum" data-rev="1900" data-op="650">Coloured Capsicum (शिमला मिर्च) — Red/Yellow</option>
+              <option value="cucumber" data-rev="1500" data-op="450">Seedless English Cucumber (पॉलीहाउस काकडी)</option>
+              <option value="tomato" data-rev="1700" data-op="550">Cherry Tomatoes (चेरी टमाटर)</option>
+              <option value="strawberry" data-rev="2400" data-op="800">Strawberry (स्ट्रॉबेरी)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calc-row-2">
+          <!-- Land Size Unit and Value -->
+          <div class="form-group">
+            <label for="areaInput" data-i18n="poly_area_lbl">Proposed Polyhouse Area</label>
+            <div style="display:flex;gap:10px;">
+              <input type="number" id="areaInput" min="100" max="40000" step="10" value="1000" required style="flex:2;">
+              <select id="areaUnit" style="flex:1;">
+                <option value="sqm" selected>Sq. Meters (चौ. मी.)</option>
+                <option value="guntha">Guntha (गुंठे - 100m²)</option>
+                <option value="acre">Acres (एकड़ - 4000m²)</option>
+              </select>
+            </div>
+            <span style="font-size:0.75rem;color:#64748B;">Standard sizes: 500 sq.m (5 guntha), 1,000 sq.m (10 guntha), 4,000 sq.m (1 acre)</span>
+          </div>
+
+          <!-- Farmer Category -->
+          <div class="form-group">
+            <label for="farmerCategory" data-i18n="poly_farmer_cat">Beneficiary Farmer Category (Subsidy %)</label>
+            <select id="farmerCategory" required>
+              <option value="50" selected>General Farmer (50% Subsidy under MIDH/NHM)</option>
+              <option value="55">Small / Marginal Farmer (&lt;2 Hectares) (55% Subsidy)</option>
+              <option value="65">SC / ST / Women Farmers (65% Subsidy)</option>
+              <option value="75">Hilly / Tribal / North-East States (75% Subsidy)</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top:8px;">
+          <button type="submit" class="btn-primary btn-full" id="calcPolyBtn" data-i18n="poly_calc_btn">
+            <i data-lucide="calculator" class="ah-icon"></i> Calculate Project Cost, Subsidy &amp; Annual ROI
+          </button>
+        </div>
+      </form>
+
+      <!-- RESULTS SECTION -->
+      <div id="polyhouseResults" class="results-section hidden" style="margin-top:32px;">
+        <div class="results-header">
+          <h3 data-i18n="poly_report_title"><i data-lucide="check-circle" class="ah-icon ah-green"></i> Polyhouse Project Feasibility &amp; Subsidy Report</h3>
+          <p id="polyResultsSummary">Detailed breakdown for <strong id="resPolyArea">1,000 sq.m</strong> under <strong id="resPolyType">Naturally Ventilated Polyhouse</strong></p>
+        </div>
+
+        <!-- Metric Summary Cards -->
+        <div class="poly-grid" style="margin-bottom:20px;">
+          <div class="poly-stat-card" style="border-top:4px solid #3B82F6;">
+            <div style="font-size:0.8rem;color:#64748B;font-weight:600;" data-i18n="poly_tot_cost">TOTAL PROJECT COST</div>
+            <div class="poly-stat-num" id="cardTotalCost" style="color:#1E293B;">₹ 10,75,000</div>
+            <span style="font-size:0.75rem;color:#64748B;">Structure + Drip + Plants</span>
+          </div>
+          <div class="poly-stat-card" style="border-top:4px solid #10B981;background:#F0FDF4;">
+            <div style="font-size:0.8rem;color:#047857;font-weight:600;" data-i18n="poly_sub_amt">GOVT. SUBSIDY AMOUNT</div>
+            <div class="poly-stat-num" id="cardSubsidyAmount" style="color:#059669;">₹ 5,37,500</div>
+            <span style="font-size:0.75rem;color:#047857;" id="cardSubsidyPercent">50% MIDH/NHM grant</span>
+          </div>
+          <div class="poly-stat-card" style="border-top:4px solid #F59E0B;">
+            <div style="font-size:0.8rem;color:#B45309;font-weight:600;" data-i18n="poly_farmer_share">FARMER NET SHARE</div>
+            <div class="poly-stat-num" id="cardFarmerShare" style="color:#D97706;">₹ 5,37,500</div>
+            <span style="font-size:0.75rem;color:#64748B;">Self investment / Bank loan</span>
+          </div>
+          <div class="poly-stat-card" style="border-top:4px solid #8B5CF6;background:#FAF5FF;">
+            <div style="font-size:0.8rem;color:#6D28D9;font-weight:600;" data-i18n="poly_net_profit">EST. NET PROFIT / YEAR</div>
+            <div class="poly-stat-num" id="cardNetProfit" style="color:#7C3AED;">₹ 3,20,000</div>
+            <span style="font-size:0.75rem;color:#6D28D9;" id="cardPaybackPeriod">Payback: ~1.7 years</span>
+          </div>
+        </div>
+
+        <!-- Detailed Breakdown Table -->
+        <h4 data-i18n="poly_breakdown_title"><i data-lucide="file-spreadsheet" class="ah-icon ah-blue"></i> Capital Cost &amp; Subsidy Breakdown</h4>
+        <table class="financial-summary-table">
+          <thead>
+            <tr>
+              <th>Component</th>
+              <th>Normative Rate</th>
+              <th>Total Amount (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Polyhouse Structure (GI Tubular frame, 200µ UV film, insect net, curtain profile)</td>
+              <td id="tblStructureRate">₹935 / sq.m</td>
+              <td id="tblStructureCost">₹9,35,000</td>
+            </tr>
+            <tr>
+              <td>Drip Irrigation &amp; Micro-Fogging Automation System</td>
+              <td>₹70 / sq.m</td>
+              <td id="tblIrrigationCost">₹70,000</td>
+            </tr>
+            <tr>
+              <td>Planting Material / High-Yield Seedlings &amp; Bed Preparation</td>
+              <td>₹70 / sq.m</td>
+              <td id="tblPlantingCost">₹70,000</td>
+            </tr>
+            <tr>
+              <td><strong>Total Estimated Capital Outlay</strong></td>
+              <td>--</td>
+              <td><strong id="tblTotalProjectCost">₹10,75,000</strong></td>
+            </tr>
+            <tr style="background:#ECFDF5;">
+              <td><strong style="color:#059669;">Eligible Government Capital Subsidy</strong></td>
+              <td id="tblSubsidyRate" style="color:#059669;">50% of cost</td>
+              <td><strong id="tblTotalSubsidy" style="color:#059669;">₹5,37,500</strong></td>
+            </tr>
+            <tr>
+              <td><strong>Net Farmer's Investment (Own Funds + Bank Term Loan)</strong></td>
+              <td>--</td>
+              <td><strong id="tblNetFarmerCost" style="color:#D97706;">₹5,37,500</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Annual Recurring Economics -->
+        <h4 style="margin-top:24px;" data-i18n="poly_crop_econ_title"><i data-lucide="trending-up" class="ah-icon ah-green"></i> Estimated Annual Crop Revenue &amp; Economics</h4>
+        <table class="financial-summary-table">
+          <thead>
+            <tr>
+              <th>Economic Metric</th>
+              <th>Estimation for Target Crop</th>
+              <th>Value (₹ / Year)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Gross Annual Crop Sales / Revenue</td>
+              <td id="tblCropName">Dutch Roses (Cut Flowers)</td>
+              <td id="tblGrossRevenue" style="color:#16A34A;font-weight:600;">₹5,50,000</td>
+            </tr>
+            <tr>
+              <td>Annual Operating Expenses (Fertigation, Pesticide, Labor, Electricity)</td>
+              <td>~35% of Gross Revenue</td>
+              <td id="tblOperatingCost" style="color:#DC2626;">₹1,90,000</td>
+            </tr>
+            <tr>
+              <td><strong>Estimated Net Farmer Annual Income</strong></td>
+              <td>After all farm expenses</td>
+              <td><strong id="tblNetProfit" style="color:#059669;font-size:1.05rem;">₹3,60,000</strong></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="result-actions" style="margin-top:24px;">
+          <button type="button" class="btn-primary" onclick="window.print()">
+            <i data-lucide="printer" class="ah-icon"></i> Print Feasibility Report
+          </button>
+          <a href="schemes.html" class="btn-outline">
+            <i data-lucide="landmark" class="ah-icon"></i> Explore MIDH &amp; NHM Schemes
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. HIGH-VALUE POLYHOUSE CROPS GUIDE -->
+    <section style="margin-bottom:48px;">
+      <div class="section-header" style="text-align:left;margin-bottom:20px;">
+        <span class="section-tag">Crop Selection</span>
+        <h2 data-i18n="poly_crops_guide_title">High-Value Polyhouse Crops &amp; Economics</h2>
+        <p data-i18n="poly_crops_guide_desc">Protected cultivation yields 3x–5x more than open fields with guaranteed quality and premium mandi pricing</p>
+      </div>
+
+      <div class="poly-grid">
+        <!-- Dutch Rose -->
+        <div class="poly-stat-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:2rem;">🌹</span>
+            <div>
+              <h3 style="margin:0;font-size:1.1rem;">Dutch Roses</h3>
+              <span class="tag" style="background:#FCE7F3;color:#BE185D;">Cut Flowers • Export Grade</span>
+            </div>
+          </div>
+          <p style="font-size:0.85rem;color:#475569;line-height:1.5;">
+            Top export variety: Top Secret, Taj Mahal, Gold Strike. Requires 15–28°C and 65% humidity.
+          </p>
+          <ul style="font-size:0.82rem;color:#334155;padding-left:18px;margin-bottom:12px;">
+            <li><strong>Yield:</strong> 220–250 stems / sq.m / year</li>
+            <li><strong>Price:</strong> ₹3.50 – ₹12.00 / stem</li>
+            <li><strong>Bed Spacing:</strong> 40cm x 15cm on raised beds</li>
+          </ul>
+          <span style="font-weight:600;color:#059669;font-size:0.85rem;">Avg. Profit: ₹2.5L – ₹4L / 1,000 sq.m</span>
+        </div>
+
+        <!-- Coloured Capsicum -->
+        <div class="poly-stat-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:2rem;">🫑</span>
+            <div>
+              <h3 style="margin:0;font-size:1.1rem;">Coloured Capsicum</h3>
+              <span class="tag" style="background:#FEF3C7;color:#B45309;">Red &amp; Yellow Bell Pepper</span>
+            </div>
+          </div>
+          <p style="font-size:0.85rem;color:#475569;line-height:1.5;">
+            Varieties: Bachata (Yellow), Inspiration (Red). High demand in urban hotels, supermarkets, and export.
+          </p>
+          <ul style="font-size:0.82rem;color:#334155;padding-left:18px;margin-bottom:12px;">
+            <li><strong>Yield:</strong> 10 – 14 kg / sq.m / year</li>
+            <li><strong>Price:</strong> ₹45 – ₹110 / kg</li>
+            <li><strong>Duration:</strong> 9–10 months continuous harvest</li>
+          </ul>
+          <span style="font-weight:600;color:#059669;font-size:0.85rem;">Avg. Profit: ₹2L – ₹3.2L / 1,000 sq.m</span>
+        </div>
+
+        <!-- Seedless Cucumber -->
+        <div class="poly-stat-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:2rem;">🥒</span>
+            <div>
+              <h3 style="margin:0;font-size:1.1rem;">Parthenocarpic Cucumber</h3>
+              <span class="tag" style="background:#ECFDF5;color:#047857;">Seedless English Cucumber</span>
+            </div>
+          </div>
+          <p style="font-size:0.85rem;color:#475569;line-height:1.5;">
+            Varieties: Hilton, Kian, Silyon. Fast crop cycle allowing 3 rotations per year in polyhouse.
+          </p>
+          <ul style="font-size:0.82rem;color:#334155;padding-left:18px;margin-bottom:12px;">
+            <li><strong>Yield:</strong> 25 – 35 kg / sq.m / year (3 cycles)</li>
+            <li><strong>Price:</strong> ₹25 – ₹55 / kg</li>
+            <li><strong>First Harvest:</strong> 35–40 days after transplanting</li>
+          </ul>
+          <span style="font-weight:600;color:#059669;font-size:0.85rem;">Avg. Profit: ₹1.8L – ₹2.8L / 1,000 sq.m</span>
+        </div>
+
+        <!-- Gerbera -->
+        <div class="poly-stat-card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+            <span style="font-size:2rem;">🌸</span>
+            <div>
+              <h3 style="margin:0;font-size:1.1rem;">Gerbera Flowers</h3>
+              <span class="tag" style="background:#EDE9FE;color:#6D28D9;">Floriculture • Year-Round</span>
+            </div>
+          </div>
+          <p style="font-size:0.85rem;color:#475569;line-height:1.5;">
+            Top varieties: Dana Ellen, Silvester, Goliath. Highly resilient flower crop with continuous 3-year economic lifespan.
+          </p>
+          <ul style="font-size:0.82rem;color:#334155;padding-left:18px;margin-bottom:12px;">
+            <li><strong>Yield:</strong> 200 – 240 flowers / sq.m / year</li>
+            <li><strong>Price:</strong> ₹2.50 – ₹8.00 / flower</li>
+            <li><strong>Plant Life:</strong> 30–36 months productive life</li>
+          </ul>
+          <span style="font-weight:600;color:#059669;font-size:0.85rem;">Avg. Profit: ₹2.2L – ₹3.5L / 1,000 sq.m</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. CLIMATE & MICROCLIMATE CONTROL ADVISORY -->
+    <section style="margin-bottom:48px;" class="calculator-card">
+      <div class="calc-header">
+        <h2 data-i18n="poly_climate_title"><i data-lucide="thermometer-sun" class="ah-icon ah-orange"></i> Microclimate Control Parameters</h2>
+        <p data-i18n="poly_climate_desc">Scientific temperature, humidity, shading, and fertigation targets for maximum polyhouse productivity</p>
+      </div>
+
+      <div class="poly-grid">
+        <div style="background:#F8FAFC;padding:16px;border-radius:10px;border-left:4px solid #3B82F6;">
+          <h4 style="margin-bottom:6px;"><i data-lucide="thermometer" class="ah-icon ah-blue"></i> Temperature Range</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            <strong>Day:</strong> 24°C – 28°C<br>
+            <strong>Night:</strong> 16°C – 18°C<br>
+            <span style="font-size:0.75rem;color:#64748B;">Keep side curtains open when ambient temp exceeds 30°C.</span>
+          </p>
+        </div>
+
+        <div style="background:#F8FAFC;padding:16px;border-radius:10px;border-left:4px solid #10B981;">
+          <h4 style="margin-bottom:6px;"><i data-lucide="droplet" class="ah-icon ah-green"></i> Relative Humidity (RH)</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            <strong>Optimal:</strong> 60% – 70%<br>
+            <strong>High RH Warning:</strong> &gt;85% triggers powdery mildew.<br>
+            <span style="font-size:0.75rem;color:#64748B;">Use overhead 4-way micro foggers (operating at 4 kg/cm² pressure).</span>
+          </p>
+        </div>
+
+        <div style="background:#F8FAFC;padding:16px;border-radius:10px;border-left:4px solid #F59E0B;">
+          <h4 style="margin-bottom:6px;"><i data-lucide="sun" class="ah-icon ah-yellow"></i> Shading Net Factor</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            <strong>Summer:</strong> 50% Green/Aluminet thermal net.<br>
+            <strong>Winter / Monsoon:</strong> Roll net back for maximum sunlight.<br>
+            <span style="font-size:0.75rem;color:#64748B;">Polyfilm must be 200-micron UV-stabilized 5-layer diffused.</span>
+          </p>
+        </div>
+
+        <div style="background:#F8FAFC;padding:16px;border-radius:10px;border-left:4px solid #8B5CF6;">
+          <h4 style="margin-bottom:6px;"><i data-lucide="test-tube" class="ah-icon ah-purple"></i> Soil EC &amp; pH Norms</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            <strong>Soil pH:</strong> 6.0 – 6.8 (Slightly acidic)<br>
+            <strong>Electrical Conductivity (EC):</strong> &lt; 1.0 mS/cm<br>
+            <span style="font-size:0.75rem;color:#64748B;">Perform soil solarization or Hydrogen Peroxide sterilization before planting.</span>
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. STEP-BY-STEP SUBSIDY APPLICATION ROADMAP -->
+    <section class="calculator-card" style="margin-bottom:48px;">
+      <div class="calc-header">
+        <h2 data-i18n="poly_subsidy_steps_title"><i data-lucide="landmark" class="ah-icon ah-yellow"></i> Step-by-Step Government Subsidy Application Guide</h2>
+        <p data-i18n="poly_subsidy_steps_desc">Official procedure to apply for MIDH / NHB polyhouse capital subsidy through State Horticulture Portals</p>
+      </div>
+
+      <div class="step-timeline">
+        <div class="step-item">
+          <h4 style="margin-bottom:4px;">1. Land Record &amp; Soil/Water Test Verification</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            Ensure land title is clear with 7/12 extract and 8A (or regional Record of Rights). Conduct water testing for salinity (EC &lt; 1.0, pH 6.5–7.5, Chloride &lt; 150 ppm).
+          </p>
+        </div>
+
+        <div class="step-item">
+          <h4 style="margin-bottom:4px;">2. Obtain Quotation &amp; DPR from Accredited Fabricator</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            Contact an empaneled polyhouse manufacturer (must comply with BIS standard IS 14462:1997). Get a Detailed Project Report (DPR) with structural drawings, cost estimate, and bills of materials.
+          </p>
+        </div>
+
+        <div class="step-item">
+          <h4 style="margin-bottom:4px;">3. Online Application on Horticulture Portal</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            Apply through your state's online DBT portal (e.g., <strong>MahaDBT</strong> in Maharashtra, <strong>Hortnet</strong> nationally, or NHB portal). Upload Aadhaar, 7/12, bank passbook, quotation, and DPR.
+          </p>
+        </div>
+
+        <div class="step-item">
+          <h4 style="margin-bottom:4px;">4. Issuance of Pre-Sanction Letter &amp; Bank Term Loan</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            District Horticulture Officer (DHO) reviews application and issues an official Pre-Sanction Letter. Use this letter to obtain a bank term loan for the non-subsidy component under Priority Sector Lending.
+          </p>
+        </div>
+
+        <div class="step-item">
+          <h4 style="margin-bottom:4px;">5. Construction &amp; Geotagged Physical Inspection</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            Erect the polyhouse structure within the sanctioned timeline. Officers perform GPS geotagged photo inspection and verify BIS grade GI pipes (2mm wall thickness) and 200µ polythene sheet.
+          </p>
+        </div>
+
+        <div class="step-item">
+          <h4 style="margin-bottom:4px;">6. Direct Benefit Transfer (DBT) Subsidy Disbursement</h4>
+          <p style="font-size:0.85rem;color:#475569;margin:0;">
+            Subsidy amount (50%–75%) is directly credited to the farmer's bank loan account, drastically reducing interest liability and principle burden.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- BACK TO HOME CTA -->
+    <div class="text-center" style="margin-top:20px;">
+      <a href="index.html" class="btn-back" data-i18n="btn_back_home">← Back to AgriHub Home</a>
+    </div>
+
+  </div>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">🌾 AgriHub</div>
+          <p>Empowering India's farmers with digital innovation. Free, multilingual, and built for the fields.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="fertilizer.html">Fertilizer Calculator</a></li>
+            <li><a href="polyhouse.html">Polyhouse &amp; Protected Farming</a></li>
+            <li><a href="schemes.html">Government Schemes</a></li>
+            <li><a href="weather.html">Live Weather</a></li>
+            <li><a href="crop-advisor.html">AI Crop Advisor</a></li>
+            <li><a href="ai-assistant.html">Kisan AI Assistant</a></li>
+            <li><a href="pesticide.html">Pesticide Safety Guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact Us</h4>
+          <p><i data-lucide="mail" class="ah-icon ah-green"></i> support@agrihub.in</p>
+          <p><i data-lucide="phone" class="ah-icon ah-green"></i> 1800-XXX-XXXX (Toll Free)</p>
+          <p><i data-lucide="clock" class="ah-icon ah-green"></i> 24/7 AI Assistance</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 AgriHub. Made with <i data-lucide="heart" style="width:14px;height:14px;color:#10B981;vertical-align:middle;"></i> for Indian Farmers.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/translations.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/ai-assistant.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+
+      const polyForm = document.getElementById('polyhouseForm');
+      const structSelect = document.getElementById('structureType');
+      const cropSelect = document.getElementById('cropFocus');
+      const areaInput = document.getElementById('areaInput');
+      const areaUnit = document.getElementById('areaUnit');
+      const farmerCat = document.getElementById('farmerCategory');
+      const resultsDiv = document.getElementById('polyhouseResults');
+
+      const polyTranslations = {
+        structures: {
+          nvph: {
+            en: "Naturally Ventilated Polyhouse (NVPH) — ₹935 / sq.m",
+            hi: "प्राकृतिक रूप से हवादार पॉलीहाउस (NVPH) — ₹935 / वर्ग मी.",
+            mr: "नैसर्गिक वायुवीजन पॉलीहाउस (NVPH) — ₹935 / चौ. मी."
+          },
+          fan_pad: {
+            en: "Climate-Controlled Hi-Tech Polyhouse (Fan & Pad) — ₹1,520 / sq.m",
+            hi: "जलवायु-नियंत्रित हाई-टेक पॉलीहाउस (फैन व पैड) — ₹1,520 / वर्ग मी.",
+            mr: "हवामान नियंत्रित हाय-टेक पॉलीहाउस (फॅन व पॅड) — ₹1,520 / चौ. मी."
+          },
+          shade_net: {
+            en: "Shade Net House (Tubular Structure) — ₹710 / sq.m",
+            hi: "शेड नेट हाउस (ट्यूबलर संरचना) — ₹710 / वर्ग मी.",
+            mr: "शेडनेट हाऊस (ट्युब्युलर संरचना) — ₹710 / चौ. मी."
+          },
+          tunnel: {
+            en: "Walk-in Poly Tunnel — ₹360 / sq.m",
+            hi: "वॉक-इन पॉली टनल — ₹360 / वर्ग मी.",
+            mr: "वॉक-इन पॉली टनेल — ₹360 / चौ. मी."
+          }
+        },
+        crops: {
+          rose: { en: "Dutch Roses (Cut Flowers)", hi: "डच गुलाब (कट फ्लावर्स)", mr: "डच गुलाब (कट फ्लॉवर्स)" },
+          gerbera: { en: "Gerbera (Cut Flowers)", hi: "जरबेरा (कट फ्लावर्स)", mr: "जरबेरा (कट फ्लॉवर्स)" },
+          capsicum: { en: "Coloured Capsicum (Red/Yellow)", hi: "रंग-बिरंगी शिमला मिर्च (लाल/पीली)", mr: "रंगीत ढोबळी मिरची (लाल/पिवळी)" },
+          cucumber: { en: "Seedless English Cucumber", hi: "बीजरहित इंग्लिश खीरा", mr: "बिया नसलेली इंग्रजी काकडी" },
+          tomato: { en: "Cherry Tomatoes", hi: "चेरी टमाटर", mr: "चेरी टोमॅटो" },
+          strawberry: { en: "Strawberry", hi: "स्ट्रॉबेरी", mr: "स्ट्रॉबेरी" }
+        },
+        units: {
+          sqm: { en: "Sq. Meters", hi: "वर्ग मीटर (चौ. मी.)", mr: "चौरस मीटर (चौ. मी.)" },
+          guntha: { en: "Guntha (100m²)", hi: "गुंठा (100 वर्ग मी.)", mr: "गुंठे (100 चौ. मी.)" },
+          acre: { en: "Acres (4000m²)", hi: "एकड़ (4000 वर्ग मी.)", mr: "एकर (4000 चौ. मी.)" }
+        },
+        farmerCats: {
+          50: {
+            en: "General Farmer (50% Subsidy under MIDH/NHM)",
+            hi: "सामान्य किसान (MIDH/NHM के तहत 50% सब्सिडी)",
+            mr: "सामान्य शेतकरी (MIDH/NHM अंतर्गत 50% अनुदान)"
+          },
+          55: {
+            en: "Small / Marginal Farmer (<2 Hectares) (55% Subsidy)",
+            hi: "छोटे / सीमांत किसान (<2 हेक्टेयर) (55% सब्सिडी)",
+            mr: "अल्प व अत्यल्प भूधारक (<2 हेक्टर) (55% अनुदान)"
+          },
+          65: {
+            en: "SC / ST / Women Farmers (65% Subsidy)",
+            hi: "अ.जा. / अ.ज. / महिला किसान (65% सब्सिडी)",
+            mr: "अनु. जाती / जमाती / महिला शेतकरी (65% अनुदान)"
+          },
+          75: {
+            en: "Hilly / Tribal / North-East States (75% Subsidy)",
+            hi: "पहाड़ी / आदिवासी / पूर्वोत्तर राज्य (75% सब्सिडी)",
+            mr: "डोंगराळ / आदिवासी / ईशान्य राज्ये (75% अनुदान)"
+          }
+        },
+        labels: {
+          subsidyGrant: {
+            en: "{percent}% Grant under MIDH / NHM",
+            hi: "MIDH / NHM के तहत {percent}% अनुदान",
+            mr: "MIDH / NHM अंतर्गत {percent}% अनुदान"
+          },
+          payback: {
+            en: "Payback period: ~{years} Years",
+            hi: "लागत वसूली अवधि: ~{years} वर्ष",
+            mr: "परतावा कालावधी: ~{years} वर्षे"
+          },
+          breakdownSubsidy: {
+            en: "{percent}% subsidy",
+            hi: "{percent}% सब्सिडी",
+            mr: "{percent}% अनुदान"
+          },
+          perSqm: {
+            en: "/ sq.m",
+            hi: "/ वर्ग मी.",
+            mr: "/ चौ. मी."
+          }
+        }
+      };
+
+      function updateDropdowns(lang) {
+        const l = lang || (window.AgriHubI18n ? window.AgriHubI18n.getCurrentLanguage() : 'en');
+
+        // Structure options
+        Array.from(structSelect.options).forEach(opt => {
+          if (polyTranslations.structures[opt.value] && polyTranslations.structures[opt.value][l]) {
+            opt.textContent = polyTranslations.structures[opt.value][l];
+          }
+        });
+
+        // Crop options
+        Array.from(cropSelect.options).forEach(opt => {
+          if (polyTranslations.crops[opt.value] && polyTranslations.crops[opt.value][l]) {
+            opt.textContent = polyTranslations.crops[opt.value][l];
+          }
+        });
+
+        // Unit options
+        Array.from(areaUnit.options).forEach(opt => {
+          if (polyTranslations.units[opt.value] && polyTranslations.units[opt.value][l]) {
+            opt.textContent = polyTranslations.units[opt.value][l];
+          }
+        });
+
+        // Farmer Category options
+        Array.from(farmerCat.options).forEach(opt => {
+          if (polyTranslations.farmerCats[opt.value] && polyTranslations.farmerCats[opt.value][l]) {
+            opt.textContent = polyTranslations.farmerCats[opt.value][l];
+          }
+        });
+      }
+
+      function calculatePolyhouse(e) {
+        if (e) e.preventDefault();
+
+        const lang = window.AgriHubI18n ? window.AgriHubI18n.getCurrentLanguage() : 'en';
+
+        // 1. Calculate Area in Sq. Meters
+        const rawArea = parseFloat(areaInput.value) || 1000;
+        const unit = areaUnit.value;
+        let areaInSqm = rawArea;
+        if (unit === 'guntha') areaInSqm = rawArea * 100;
+        else if (unit === 'acre') areaInSqm = rawArea * 4047;
+
+        // 2. Base Structural Cost per sq.m
+        const selectedStructOption = structSelect.options[structSelect.selectedIndex];
+        const costPerSqm = parseFloat(selectedStructOption.getAttribute('data-cost')) || 935;
+        const structureCost = areaInSqm * costPerSqm;
+
+        // 3. Automation, Drip & Planting Material (Standard MIDH norms: ₹70/sq.m drip + ₹70/sq.m planting)
+        const dripCost = areaInSqm * 70;
+        const plantBedCost = areaInSqm * 70;
+        const totalProjectCost = structureCost + dripCost + plantBedCost;
+
+        // 4. Subsidy Percentage
+        const subsidyPercent = parseFloat(farmerCat.value) || 50;
+        const subsidyAmount = (totalProjectCost * subsidyPercent) / 100;
+        const farmerShare = totalProjectCost - subsidyAmount;
+
+        // 5. Crop Economics
+        const selectedCropOption = cropSelect.options[cropSelect.selectedIndex];
+        const revPerSqm = parseFloat(selectedCropOption.getAttribute('data-rev')) || 2500;
+        const opPerSqm = parseFloat(selectedCropOption.getAttribute('data-op')) || 800;
+
+        const grossRevenue = areaInSqm * (revPerSqm / 5); // realistic annual yield factor
+        const operatingCost = areaInSqm * (opPerSqm / 5);
+        const netProfit = grossRevenue - operatingCost;
+        const paybackYears = farmerShare > 0 ? (farmerShare / netProfit).toFixed(1) : '1.0';
+
+        // Localized strings
+        const unitLabel = polyTranslations.units[unit] ? polyTranslations.units[unit][lang] : unit;
+        const localizedCrop = polyTranslations.crops[cropSelect.value] ? polyTranslations.crops[cropSelect.value][lang] : selectedCropOption.text;
+        const structName = (polyTranslations.structures[structSelect.value] ? polyTranslations.structures[structSelect.value][lang] : selectedStructOption.text).split('—')[0].trim();
+        const perSqmText = polyTranslations.labels.perSqm[lang] || '/ sq.m';
+
+        // 6. Update UI
+        document.getElementById('resPolyArea').textContent = `${rawArea} ${unitLabel} (${Math.round(areaInSqm).toLocaleString()} sq.m)`;
+        document.getElementById('resPolyType').textContent = structName;
+
+        // Top KPI Cards
+        document.getElementById('cardTotalCost').textContent = `₹ ${Math.round(totalProjectCost).toLocaleString('en-IN')}`;
+        document.getElementById('cardSubsidyAmount').textContent = `₹ ${Math.round(subsidyAmount).toLocaleString('en-IN')}`;
+        document.getElementById('cardSubsidyPercent').textContent = (polyTranslations.labels.subsidyGrant[lang] || '{percent}% Grant').replace('{percent}', subsidyPercent);
+        document.getElementById('cardFarmerShare').textContent = `₹ ${Math.round(farmerShare).toLocaleString('en-IN')}`;
+        document.getElementById('cardNetProfit').textContent = `₹ ${Math.round(netProfit).toLocaleString('en-IN')}`;
+        document.getElementById('cardPaybackPeriod').textContent = (polyTranslations.labels.payback[lang] || 'Payback: ~{years} Years').replace('{years}', paybackYears);
+
+        // Breakdown Table
+        document.getElementById('tblStructureRate').textContent = `₹${costPerSqm} ${perSqmText}`;
+        document.getElementById('tblStructureCost').textContent = `₹ ${Math.round(structureCost).toLocaleString('en-IN')}`;
+        document.getElementById('tblIrrigationCost').textContent = `₹ ${Math.round(dripCost).toLocaleString('en-IN')}`;
+        document.getElementById('tblPlantingCost').textContent = `₹ ${Math.round(plantBedCost).toLocaleString('en-IN')}`;
+        document.getElementById('tblTotalProjectCost').textContent = `₹ ${Math.round(totalProjectCost).toLocaleString('en-IN')}`;
+        document.getElementById('tblSubsidyRate').textContent = (polyTranslations.labels.breakdownSubsidy[lang] || '{percent}% subsidy').replace('{percent}', subsidyPercent);
+        document.getElementById('tblTotalSubsidy').textContent = `₹ ${Math.round(subsidyAmount).toLocaleString('en-IN')}`;
+        document.getElementById('tblNetFarmerCost').textContent = `₹ ${Math.round(farmerShare).toLocaleString('en-IN')}`;
+
+        // Crop Revenue Table
+        document.getElementById('tblCropName').textContent = localizedCrop;
+        document.getElementById('tblGrossRevenue').textContent = `₹ ${Math.round(grossRevenue).toLocaleString('en-IN')}`;
+        document.getElementById('tblOperatingCost').textContent = `₹ ${Math.round(operatingCost).toLocaleString('en-IN')}`;
+        document.getElementById('tblNetProfit').textContent = `₹ ${Math.round(netProfit).toLocaleString('en-IN')}`;
+
+        resultsDiv.classList.remove('hidden');
+        resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      polyForm.addEventListener('submit', calculatePolyhouse);
+
+      // Auto-recalculate on change
+      structSelect.addEventListener('change', () => { if (!resultsDiv.classList.contains('hidden')) calculatePolyhouse(); });
+      cropSelect.addEventListener('change', () => { if (!resultsDiv.classList.contains('hidden')) calculatePolyhouse(); });
+      farmerCat.addEventListener('change', () => { if (!resultsDiv.classList.contains('hidden')) calculatePolyhouse(); });
+
+      // Initialize dropdown options according to saved language
+      const initialLang = window.AgriHubI18n ? window.AgriHubI18n.getCurrentLanguage() : 'en';
+      updateDropdowns(initialLang);
+
+      // Reactive Language Change Listener
+      window.addEventListener('agrihub:languageChanged', (e) => {
+        const newLang = (e.detail && e.detail.lang) || initialLang;
+        updateDropdowns(newLang);
+        if (!resultsDiv.classList.contains('hidden')) {
+          calculatePolyhouse();
+        }
+      });
+    });
+  </script>
+</body>
+
+</html>

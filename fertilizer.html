@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="AgriHub Fertilizer Calculator — Get precise NPK dosage recommendations for 20+ crops based on your land size.">
+    <meta property="og:title" content="Fertilizer Calculator — AgriHub">
+    <meta property="og:description"
+        content="Science-based fertilizer dosage for your crops. Calculate exact NPK quantities.">
+    <meta property="og:image"
+        content="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1200&q=80">
+    <meta name="theme-color" content="#10B981">
+    <title>Fertilizer Calculator — AgriHub</title>
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500&family=Poppins:wght@500;600;700&display=swap"
+        rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/animations.css">
+    <style>
+      .ah-icon{width:16px;height:16px;margin-right:5px;vertical-align:middle;flex-shrink:0;display:inline-block;}
+      .ah-icon-lg{width:22px;height:22px;}
+      .ah-green{color:#16a34a;}.ah-blue{color:#3b82f6;}.ah-purple{color:#7c3aed;}
+      .ah-yellow{color:#ca8a04;}.ah-gray{color:#6b7280;}.ah-orange{color:#ea580c;}
+      h1,h2,h3,h4{font-family:'Poppins','DM Sans',sans-serif;}
+    </style>
+</head>
+
+<body>
+    <div class="page-progress" id="pageProgress"></div>
+
+    <!-- Navbar -->
+    <header class="navbar scrolled" id="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-icon">🌾</span>
+                <a href="index.html" class="brand-text">Agri<span class="brand-accent">Hub</span></a>
+            </div>
+            <nav class="nav-links" id="navLinks">
+                <a href="index.html" data-i18n="nav_home"><i data-lucide="home" class="ah-icon ah-green"></i>Home</a>
+                <a href="fertilizer.html" class="active" data-i18n="nav_fertilizer"><i data-lucide="leaf" class="ah-icon ah-green"></i>Fertilizer</a>
+                <a href="polyhouse.html" data-i18n="nav_polyhouse"><i data-lucide="warehouse" class="ah-icon ah-green"></i>Polyhouse</a>
+                <a href="schemes.html" data-i18n="nav_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i>Schemes</a>
+                <a href="weather.html" data-i18n="nav_weather"><i data-lucide="cloud-sun" class="ah-icon ah-blue"></i>Weather</a>
+                <a href="crop-advisor.html" data-i18n="nav_advisor"><i data-lucide="brain" class="ah-icon ah-purple"></i>Crop Advisor</a>
+                <a href="ai-assistant.html" data-i18n="nav_ai_assistant"><i data-lucide="bot" class="ah-icon ah-pink"></i>AI Assistant</a>
+                <a href="pesticide.html" data-i18n="nav_pesticide"><i data-lucide="shield-alert" class="ah-icon ah-red"></i>Pesticides</a>
+            </nav>
+            <div class="nav-actions">
+                <select id="languageSelector" class="lang-select" aria-label="Select Language">
+                    <option value="en">🌐 English</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="mr">मराठी</option>
+                </select>
+                <div id="authButtons">
+                    <button class="btn-nav-outline" id="openLogin">Login</button>
+                    <button class="btn-nav-primary" id="openRegister">Register</button>
+                </div>
+                <div id="userMenu" class="user-menu hidden">
+                    <span class="user-greeting" id="userGreeting">👋 Hello</span>
+                    <a href="dashboard.html" class="btn-nav-outline">Dashboard</a>
+                    <button class="btn-nav-outline" id="logoutBtn">Logout</button>
+                </div>
+            </div>
+            <button class="hamburger" id="hamburger"
+                aria-label="Toggle menu"><span></span><span></span><span></span></button>
+        </div>
+    </header>
+    <div class="nav-overlay" id="navOverlay"></div>
+
+    <!-- Page Hero -->
+    <section class="page-hero">
+        <div class="hero-bg">
+            <img src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=1920&q=80"
+                alt="Fertilizer in agricultural field" class="hero-img" loading="eager">
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="page-hero-content animate-fade-up">
+            <h1 data-i18n="fert_title"><i data-lucide="leaf" class="ah-icon-lg ah-green"></i>Fertilizer Calculator</h1>
+            <p data-i18n="fert_subtitle">Science-based dosage for your crops</p>
+        </div>
+    </section>
+
+    <!-- Calculator -->
+    <div class="container" style="padding-bottom: 64px;">
+        <div class="calculator-card animate-fade-up">
+            <div class="calc-header">
+                <span class="calc-icon"></span>
+                <h2 data-i18n="fert_card_title"><i data-lucide="calculator" class="ah-icon ah-green"></i>Get Your Fertilizer Recommendation</h2>
+                <p data-i18n="fert_card_desc">Enter your land details to get precise NPK dosages</p>
+            </div>
+            <form id="fertilizerForm">
+                <div class="form-group">
+                    <label for="landSize"><span data-i18n="fert_land_label">Land Size</span> <span class="unit-label" data-i18n="fert_land_unit">(in acres)</span></label>
+                    <div class="input-with-unit">
+                        <input type="number" id="landSize" min="0.1" max="1000" step="0.1" placeholder="e.g. 2.5"
+                            data-i18n-placeholder="fert_land_placeholder" required>
+                        <span class="unit-suffix" data-i18n="fert_land_unit">acres</span>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="cropSelect" data-i18n="fert_crop_label">Select Crop</label>
+                    <select id="cropSelect" required>
+                        <option value="" data-i18n="fert_crop_placeholder">-- Choose your crop --</option>
+                        <optgroup label="Cereals">
+                            <option value="wheat">Wheat (गेहूं / गहू)</option>
+                            <option value="rice">Rice / Paddy (धान / भात)</option>
+                            <option value="maize">Maize / Corn (मक्का / मका)</option>
+                            <option value="sorghum">Sorghum / Jowar (ज्वार / ज्वारी)</option>
+                            <option value="bajra">Pearl Millet / Bajra (बाजरा / बाजरी)</option>
+                        </optgroup>
+                        <optgroup label="Pulses">
+                            <option value="chickpea">Chickpea / Chana (चना / हरभरा)</option>
+                            <option value="lentil">Lentil / Masoor (मसूर)</option>
+                            <option value="moong">Green Gram / Moong (मूंग / मूग)</option>
+                            <option value="urad">Black Gram / Urad (उड़द / उडीद)</option>
+                            <option value="soybean">Soybean (सोयाबीन)</option>
+                        </optgroup>
+                        <optgroup label="Vegetables">
+                            <option value="tomato">Tomato (टमाटर / टोमॅटो)</option>
+                            <option value="onion">Onion (प्याज / कांदा)</option>
+                            <option value="potato">Potato (आलू / बटाटा)</option>
+                            <option value="cabbage">Cabbage (पत्ता गोभी / कोबी)</option>
+                            <option value="cauliflower">Cauliflower (फूल गोभी / फ्लॉवर)</option>
+                        </optgroup>
+                        <optgroup label="Cash Crops">
+                            <option value="sugarcane">Sugarcane (गन्ना / ऊस)</option>
+                            <option value="cotton">Cotton (कपास / कापूस)</option>
+                            <option value="groundnut">Groundnut (मूंगफली / भुईमूग)</option>
+                            <option value="sunflower">Sunflower (सूरजमुखी / सूर्यफूल)</option>
+                            <option value="mustard">Mustard (सरसों / मोहरी)</option>
+                        </optgroup>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary btn-full">
+                    <span id="calcBtnText" data-i18n="fert_calc_btn"><i data-lucide="flask-conical" class="ah-icon"></i>Calculate Dosage</span>
+                </button>
+            </form>
+
+            <div id="fertilizerResults" class="results-section hidden">
+                <div class="results-header">
+                    <h3 data-i18n="fert_results_title"><i data-lucide="leaf" class="ah-icon ah-green"></i>Fertilizer Recommendation</h3>
+                    <p id="resultsSubtitle">For <strong id="resultsLand"></strong> acres of <strong
+                            id="resultsCrop"></strong></p>
+                </div>
+                <div class="result-category">
+                    <h4 data-i18n="fert_primary_npk">Primary Fertilizers (NPK)</h4>
+                    <div class="result-items-grid">
+                        <div class="result-item"><span class="result-icon"></span><span class="result-label" data-i18n="fert_urea_label">Urea
+                                (N)</span><span class="result-value" id="res-urea">-- kg</span></div>
+                        <div class="result-item"><span class="result-icon"></span><span class="result-label" data-i18n="fert_dap_label">DAP
+                                (P)</span><span class="result-value" id="res-dap">-- kg</span></div>
+                        <div class="result-item"><span class="result-icon"></span><span class="result-label" data-i18n="fert_mop_label">MOP
+                                (K)</span><span class="result-value" id="res-mop">-- kg</span></div>
+                    </div>
+                </div>
+                <div class="result-category">
+                    <h4 data-i18n="fert_alt_ssp">Alternative (SSP)</h4>
+                    <div class="result-item"><span class="result-label" data-i18n="fert_ssp_label">SSP (P alternative)</span><span
+                            class="result-value" id="res-ssp">-- kg</span></div>
+                </div>
+                <div class="result-category">
+                    <h4 data-i18n="fert_micronutrients">Micronutrients</h4>
+                    <div class="result-items-grid">
+                        <div class="result-item"><span class="result-label" data-i18n="fert_zinc_label">Zinc Sulphate</span><span
+                                class="result-value" id="res-zinc">-- kg</span></div>
+                        <div class="result-item"><span class="result-label" data-i18n="fert_sulphur_label">Sulphur</span><span class="result-value"
+                                id="res-sulphur">-- kg</span></div>
+                        <div class="result-item"><span class="result-label" data-i18n="fert_magnesium_label">Magnesium</span><span class="result-value"
+                                id="res-magnesium">-- kg</span></div>
+                    </div>
+                </div>
+                <div class="result-category">
+                    <h4 data-i18n="fert_organic">Organic Manure</h4>
+                    <div class="result-item"><span class="result-label" data-i18n="fert_organic_label">FYM / Compost</span><span class="result-value"
+                            id="res-organic">-- tonnes</span></div>
+                </div>
+                <div class="result-note" data-i18n="fert_note">These are general recommendations. For precise dosage, get your <strong>Soil
+                        Health Card</strong> tested at your nearest Krishi Kendra.</div>
+                <div class="result-actions">
+                    <button class="btn-primary" onclick="window.print()" data-i18n="print_report"><i data-lucide="printer" class="ah-icon"></i>Print Report</button>
+                    <button class="btn-outline" id="resetCalculator" data-i18n="fert_new_calc"><i data-lucide="rotate-ccw" class="ah-icon"></i>New Calculation</button>
+                </div>
+            </div>
+        </div>
+        <div class="text-center"><a href="index.html" class="btn-back" data-i18n="btn_back_home">← Back to Home</a></div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom" style="border-top:none;">
+                <p>© 2025 AgriHub. Made with <i data-lucide="heart" style="width:14px;height:14px;color:#10B981;vertical-align:middle;"></i> for Indian Farmers.</p>
+                <div class="footer-links-inline">
+                    <a href="#">Privacy Policy</a><a href="#">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <button class="scroll-top" id="scrollToTop" aria-label="Scroll to top">↑</button>
+    <div class="toast-container" id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="assets/js/supabase-client.js"></script>
+    <script src="assets/js/translations.js"></script>
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/auth.js"></script>
+    <script src="assets/js/ai-assistant.js"></script>
+    <script src="assets/js/fertilizer.js"></script>
+    <script>lucide.createIcons();</script>
+</body>
+
+</html>

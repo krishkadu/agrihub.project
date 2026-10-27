@@ -1,0 +1,370 @@
+ <!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Kisan AI Assistant — 24/7 Voice & Chat intelligent agriculture advisor for crop disease remedies, fertilizer dosage, mandi rates, and schemes.">
+  <meta name="theme-color" content="#10B981">
+  <title>Kisan AI Assistant — AgriHub</title>
+  <link rel="icon"
+    href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌿</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=DM+Sans:wght@400;500;600&family=Inter:wght@400;500&family=Poppins:wght@500;600;700&display=swap"
+    rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="assets/css/animations.css">
+  <style>
+    .ah-icon { width: 16px; height: 16px; margin-right: 5px; vertical-align: middle; flex-shrink: 0; display: inline-block; }
+    .ah-icon-lg { width: 24px; height: 24px; }
+    .ah-green { color: #16a34a; }
+    .ah-blue { color: #3b82f6; }
+    .ah-purple { color: #7c3aed; }
+    .ah-yellow { color: #ca8a04; }
+    .ah-gray { color: #6b7280; }
+    .ah-orange { color: #ea580c; }
+    .ah-pink { color: #db2777; }
+    h1, h2, h3, h4 { font-family: 'Poppins', 'DM Sans', sans-serif; }
+  </style>
+</head>
+
+<body>
+  <div class="page-progress" id="pageProgress"></div>
+
+  <!-- ══════════ NAVBAR ══════════ -->
+  <header class="navbar scrolled" id="navbar">
+    <div class="nav-container">
+      <div class="nav-brand">
+        <span class="brand-icon">🌾</span>
+        <a href="index.html" class="brand-text">Agri<span class="brand-accent">Hub</span></a>
+      </div>
+      <nav class="nav-links" id="navLinks">
+        <a href="index.html" data-i18n="nav_home"><i data-lucide="home" class="ah-icon ah-green"></i>Home</a>
+        <a href="fertilizer.html" data-i18n="nav_fertilizer"><i data-lucide="leaf" class="ah-icon ah-green"></i>Fertilizer</a>
+        <a href="polyhouse.html" data-i18n="nav_polyhouse"><i data-lucide="warehouse" class="ah-icon ah-green"></i>Polyhouse</a>
+        <a href="schemes.html" data-i18n="nav_schemes"><i data-lucide="file-text" class="ah-icon ah-yellow"></i>Schemes</a>
+        <a href="weather.html" data-i18n="nav_weather"><i data-lucide="cloud-sun" class="ah-icon ah-blue"></i>Weather</a>
+        <a href="crop-advisor.html" data-i18n="nav_advisor"><i data-lucide="brain" class="ah-icon ah-purple"></i>Crop Advisor</a>
+        <a href="ai-assistant.html" class="active" data-i18n="nav_ai_assistant"><i data-lucide="bot" class="ah-icon ah-pink"></i>AI Assistant</a>
+        <a href="pesticide.html" data-i18n="nav_pesticide"><i data-lucide="shield-alert" class="ah-icon ah-red"></i>Pesticides</a>
+      </nav>
+      <div class="nav-actions">
+        <select id="languageSelector" class="lang-select" aria-label="Select Language">
+          <option value="en">🌐 English</option>
+          <option value="hi">हिन्दी</option>
+          <option value="mr">मराठी</option>
+        </select>
+        <div id="authButtons">
+          <button class="btn-nav-outline" id="openLogin">Login</button>
+          <button class="btn-nav-primary" id="openRegister">Register</button>
+        </div>
+        <div id="userMenu" class="user-menu hidden">
+          <span class="user-greeting" id="userGreeting">👋 Hello</span>
+          <a href="dashboard.html" class="btn-nav-outline">Dashboard</a>
+          <button class="btn-nav-outline" id="logoutBtn">Logout</button>
+        </div>
+      </div>
+      <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+  <div class="nav-overlay" id="navOverlay"></div>
+
+  <!-- ══════════ PAGE HERO ══════════ -->
+  <section class="page-hero">
+    <div class="hero-bg">
+      <img src="assets/images/ai_assistant_hero.jpg"
+        alt="Digital agriculture and AI" class="hero-img" loading="eager">
+      <div class="hero-overlay"></div>
+    </div>
+    <div class="page-hero-content animate-fade-up">
+      <h1 data-i18n="ai_page_title"><i data-lucide="bot" class="ah-icon-lg ah-pink"></i> Kisan AI Assistant</h1>
+      <p data-i18n="ai_page_subtitle">Your 24/7 Voice & Chat Smart Farming Expert</p>
+    </div>
+  </section>
+
+  <!-- ══════════ AI ASSISTANT MAIN WORKSPACE ══════════ -->
+  <div class="container" style="padding-bottom:60px;">
+    <div class="ai-workspace animate-fade-up">
+      
+      <!-- LEFT SIDEBAR -->
+      <aside class="ai-sidebar">
+        <div class="ai-sidebar-title" data-i18n="ai_focus_mode">
+          <i data-lucide="sliders" class="ah-icon ah-green"></i> Focus Mode
+        </div>
+
+        <div class="ai-modes-list">
+          <button class="ai-mode-btn active" data-mode="all" data-i18n="ai_mode_all">
+            <i data-lucide="sparkles" class="ah-icon ah-green"></i> All-in-One Advisor
+          </button>
+          <button class="ai-mode-btn" data-mode="disease" data-i18n="ai_mode_disease">
+            <i data-lucide="shield-alert" class="ah-icon ah-orange"></i> Crop Health & Pests
+          </button>
+          <button class="ai-mode-btn" data-mode="fertilizer" data-i18n="ai_mode_fertilizer">
+            <i data-lucide="leaf" class="ah-icon ah-green"></i> Soil Nutrition & NPK
+          </button>
+          <button class="ai-mode-btn" data-mode="schemes" data-i18n="ai_mode_schemes">
+            <i data-lucide="landmark" class="ah-icon ah-yellow"></i> Govt. Schemes & Subsidies
+          </button>
+          <button class="ai-mode-btn" data-mode="market" data-i18n="ai_mode_market">
+            <i data-lucide="trending-up" class="ah-icon ah-blue"></i> Mandi Rates & Selling
+          </button>
+          <button class="ai-mode-btn" data-mode="irrigation" data-i18n="ai_mode_irrigation">
+            <i data-lucide="droplet" class="ah-icon ah-blue"></i> Irrigation & Water
+          </button>
+        </div>
+
+        <!-- LEAF SCANNER PROMO BOX -->
+        <div class="ai-scanner-promo">
+          <h4 data-i18n="ai_scan_promo_title"><i data-lucide="camera" class="ah-icon ah-purple"></i> AI Leaf Health Scan</h4>
+          <p data-i18n="ai_scan_promo_desc">Scan crop leaves for instant fungal, bacterial, or nutrient deficiency diagnosis.</p>
+          <button class="btn-primary btn-full" id="triggerScanModal" style="padding:8px 12px;font-size:0.82rem;" data-i18n="ai_scan_promo_btn">
+            <i data-lucide="scan-line" style="width:14px;height:14px;"></i> Scan Leaf Photo
+          </button>
+        </div>
+
+        <!-- QUICK PROMPT CHIPS -->
+        <div class="ai-quick-prompts">
+          <div class="ai-sidebar-title" style="font-size:0.9rem;" data-i18n="ai_freq_questions">
+            <i data-lucide="zap" class="ah-icon ah-yellow"></i> Frequent Questions
+          </div>
+          <div id="aiSidebarPromptChips">
+            <button class="ai-prompt-chip" data-prompt="How to treat yellow leaves in Wheat crop?">
+              🌾 How to treat yellow leaves in Wheat?
+            </button>
+            <button class="ai-prompt-chip" data-prompt="Best balanced NPK fertilizer dosage for Tomato">
+              🍅 Best NPK fertilizer dosage for Tomato
+            </button>
+            <button class="ai-prompt-chip" data-prompt="How to check PM-Kisan installment & e-KYC status?">
+              🏛️ PM-Kisan installment & e-KYC status
+            </button>
+            <button class="ai-prompt-chip" data-prompt="Organic remedies for cotton bollworm & caterpillars">
+              🌿 Organic spray for bollworm/pests
+            </button>
+            <button class="ai-prompt-chip" data-prompt="How does drip irrigation subsidy work under PMKSY?">
+              💧 Drip irrigation subsidy under PMKSY
+            </button>
+            <button class="ai-prompt-chip" data-prompt="How to get 50% to 75% subsidy for Polyhouse farming?">
+              🏡 Polyhouse subsidy &amp; crop guide
+            </button>
+          </div>
+        </div>
+
+        <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;">
+          <button class="btn-outline btn-full" id="clearChatBtn" style="padding:8px;font-size:0.82rem;" data-i18n="ai_clear_chat">
+            <i data-lucide="trash-2" style="width:14px;height:14px;"></i> Clear Conversation
+          </button>
+        </div>
+      </aside>
+
+      <!-- RIGHT CHAT PANEL -->
+      <main class="ai-chat-panel">
+        
+        <!-- CHAT HEADER -->
+        <div class="ai-chat-header">
+          <div class="ai-bot-identity">
+            <div class="ai-avatar-badge">🤖</div>
+            <div>
+              <h3 data-i18n="ai_page_title">Kisan AI Assistant</h3>
+              <div class="ai-status-indicator">
+                <span class="badge-dot"></span> Online • Multilingual (EN, HI, MR)
+              </div>
+            </div>
+          </div>
+          <div class="ai-chat-tools">
+            <button class="ai-tool-btn active" id="audioToggleBtn" title="Toggle Voice Speech Output">
+              <i data-lucide="volume-2" style="width:14px;height:14px;"></i> Audio: ON
+            </button>
+            <button class="ai-tool-btn" id="exportChatBtn" title="Export Conversation" data-i18n-title="ai_export_chat">
+              <i data-lucide="download" style="width:14px;height:14px;"></i> Export
+            </button>
+          </div>
+        </div>
+
+        <!-- MESSAGE HISTORY -->
+        <div class="ai-messages-container" id="chatMessages">
+          
+          <!-- Welcome Message -->
+          <div class="ai-msg bot">
+            <div class="ai-msg-avatar">🤖</div>
+            <div class="ai-msg-content" id="aiWelcomeMsgContent">
+              <h4>Namaste Farmer Friend! 🙏</h4>
+              <p>I am your dedicated <strong>Kisan AI Assistant</strong>. You can ask me questions via voice or text in <strong>English</strong>, <strong>हिन्दी</strong>, or <strong>मराठी</strong>.</p>
+              <div class="highlight-box">
+                <strong>What I can help you with:</strong>
+                <ul>
+                  <li>Diagnose crop diseases and recommend organic/chemical remedies</li>
+                  <li>Calculate balanced NPK & micronutrient fertilizer plans</li>
+                  <li>Explain eligibility and documents for 15+ government schemes</li>
+                  <li>Share mandi pricing strategies and seasonal irrigation advice</li>
+                </ul>
+              </div>
+              <p style="margin-top:8px;font-size:0.85rem;color:#64748B;">Tap any suggestion below or speak hands-free with the microphone button!</p>
+              <div class="ai-msg-time">Just now</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- CHAT INPUT AREA -->
+        <div class="ai-chat-input-area">
+          
+          <!-- QUICK ACTION CHIP TRAY -->
+          <div class="ai-quick-chip-tray" id="aiBottomChipTray">
+            <button class="filter-pill" data-prompt="Wheat yellow rust remedy">🌾 Wheat Rust</button>
+            <button class="filter-pill" data-prompt="How to get 50% to 75% subsidy for Polyhouse farming?">🏡 Polyhouse Subsidy</button>
+            <button class="filter-pill" data-prompt="Urea and DAP application timing">🧪 NPK Timing</button>
+            <button class="filter-pill" data-prompt="PM-Kisan registration checklist">🏛️ PM-Kisan</button>
+            <button class="filter-pill" data-prompt="Drip irrigation subsidy in Maharashtra">💧 Drip Subsidy</button>
+            <button class="filter-pill" data-prompt="Soybean pest control tips">🫘 Soybean Pests</button>
+          </div>
+
+          <!-- INPUT FORM -->
+          <form id="aiChatForm" class="ai-input-wrapper">
+            <button type="button" class="ai-btn-icon" id="micBtn" title="Voice Input (Speak your query)">
+              <i data-lucide="mic" style="width:18px;height:18px;"></i>
+            </button>
+            <button type="button" class="ai-btn-icon" id="attachBtn" title="Scan / Upload Leaf Photo">
+              <i data-lucide="camera" style="width:18px;height:18px;"></i>
+            </button>
+            <input type="text" id="aiUserInput" placeholder="Type your farming query or tap mic to speak..." data-i18n-placeholder="ai_input_placeholder" autocomplete="off" required>
+            <button type="submit" class="ai-btn-icon ai-btn-send" id="aiSendBtn" title="Send Message" data-i18n-title="ai_send_btn">
+              <i data-lucide="send" style="width:18px;height:18px;"></i>
+            </button>
+          </form>
+
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ══════════ LEAF SCANNER MODAL ══════════ -->
+  <div class="modal-overlay" id="leafScanModal">
+    <div class="modal-box" style="max-width:560px;">
+      <button class="modal-close" id="closeScanModal" aria-label="Close">✕</button>
+      <div class="modal-header">
+        <span class="modal-icon">📸</span>
+        <h2>AI Leaf Disease Scanner</h2>
+        <p>Analyze leaf symptoms with computer vision simulation</p>
+      </div>
+
+      <div class="scanner-container">
+        <!-- IMAGE INPUT / UPLOAD & SAMPLES -->
+        <div class="leaf-upload-zone" id="leafDropZone" onclick="document.getElementById('leafFileInput').click()">
+          <i data-lucide="upload-cloud" style="width:28px;height:28px;color:#10B981;margin-bottom:4px;"></i>
+          <p style="font-size:0.85rem;font-weight:600;color:#1E293B;margin:0;">Upload Leaf Photo or Drag & Drop Here</p>
+          <span style="font-size:0.75rem;color:#64748B;">Supports PNG, JPG, WEBP (Max 5MB)</span>
+          <input type="file" id="leafFileInput" accept="image/*" style="display:none;">
+        </div>
+
+        <div style="margin-bottom:12px;">
+          <span style="font-size:0.78rem;font-weight:600;color:#64748B;">Or Select Sample Leaf Disease Image:</span>
+          <div class="sample-leaf-grid">
+            <div class="sample-leaf-chip active" data-img="assets/images/leaf_wheat_rust.jpg" data-disease="wheat_rust">
+              <img src="assets/images/leaf_wheat_rust.jpg" alt="Wheat Rust">
+              <span>🌾 Wheat Rust</span>
+            </div>
+            <div class="sample-leaf-chip" data-img="assets/images/leaf_blight.jpg" data-disease="blight">
+              <img src="assets/images/leaf_blight.jpg" alt="Leaf Blight">
+              <span>🍃 Leaf Blight</span>
+            </div>
+            <div class="sample-leaf-chip" data-img="assets/images/leaf_mildew.jpg" data-disease="powdery">
+              <img src="assets/images/leaf_mildew.jpg" alt="Powdery Mildew">
+              <span>⚪ Mildew</span>
+            </div>
+            <div class="sample-leaf-chip" data-img="assets/images/leaf_healthy.jpg" data-disease="healthy">
+              <img src="assets/images/leaf_healthy.jpg" alt="Healthy Leaf">
+              <span>🌱 Healthy</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="scanner-viewport" id="scannerViewport">
+          <img src="assets/images/leaf_wheat_rust.jpg"
+            alt="Leaf sample scan" id="sampleLeafImg">
+          <div class="scanner-laser" id="scannerLaser" style="display:none;"></div>
+          <div class="scanner-bounding-box" id="scannerBox" style="display:none;">
+            <span class="scanner-tag" id="scannerTag">Analyzing...</span>
+          </div>
+        </div>
+
+        <div class="scanner-progress-bar" id="scanProgressBar" style="display:none;">
+          <div class="scanner-progress-fill" id="scanProgressFill"></div>
+        </div>
+
+        <div id="scanResultsArea" style="display:none;" class="highlight-box">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+            <strong id="scanDiseaseTitle" style="color:#DC2626;font-size:1rem;"></strong>
+            <span class="tag" id="scanConfidence" style="background:#FEF3C7;color:#D97706;font-weight:600;"></span>
+          </div>
+          <div id="scanSeverityBadge" style="margin-bottom:8px;"></div>
+          <p id="scanRemedyText" style="font-size:0.85rem;line-height:1.5;"></p>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          <button type="button" class="btn-primary btn-full" id="startScanBtn">
+            <i data-lucide="scan" style="width:16px;height:16px;"></i> Start Diagnostic Scan
+          </button>
+          <button type="button" class="btn-outline btn-full" id="insertScanToChatBtn" style="display:none;">
+            💬 Ask AI Assistant About This Result
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="brand-logo">🌾 AgriHub</div>
+          <p>Empowering India's farmers with digital innovation. Free, multilingual, and built for the fields.</p>
+        </div>
+        <div class="footer-links">
+          <h4>Services</h4>
+          <ul>
+            <li><a href="fertilizer.html">Fertilizer Calculator</a></li>
+            <li><a href="schemes.html">Government Schemes</a></li>
+            <li><a href="weather.html">Live Weather</a></li>
+            <li><a href="crop-advisor.html">AI Crop Advisor</a></li>
+            <li><a href="ai-assistant.html">Kisan AI Assistant</a></li>
+            <li><a href="pesticide.html">Pesticide Safety Guide</a></li>
+          </ul>
+        </div>
+        <div class="footer-contact">
+          <h4>Contact Us</h4>
+          <p><i data-lucide="mail" class="ah-icon ah-green"></i> support@agrihub.in</p>
+          <p><i data-lucide="phone" class="ah-icon ah-green"></i> 1800-XXX-XXXX (Toll Free)</p>
+          <p><i data-lucide="clock" class="ah-icon ah-green"></i> 24/7 AI Assistance</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2025 AgriHub. Made with <i data-lucide="heart" style="width:14px;height:14px;color:#10B981;vertical-align:middle;"></i> for Indian Farmers.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="assets/js/supabase-client.js"></script>
+  <script src="assets/js/translations.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script src="assets/js/auth.js"></script>
+  <script src="assets/js/ai-assistant.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      if (window.lucide) window.lucide.createIcons();
+    });
+  </script>
+</body>
+
+</html>
