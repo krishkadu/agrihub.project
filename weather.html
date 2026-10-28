@@ -74,57 +74,208 @@
     </section>
 
     <div class="container" style="padding-bottom:64px;">
-        <div class="weather-widget animate-fade-up">
-            <div id="weatherInitial" class="weather-initial">
-                <div class="weather-init-icon"></div>
-                <h2 data-i18n="weather_title"><i data-lucide="map-pin" class="ah-icon ah-blue"></i>Get Real-Time Weather</h2>
-                <p data-i18n="weather_subtitle">Allow location access to see weather conditions at your farm location.</p>
+        <div class="weather-widget animate-fade-up" role="region" aria-label="Weather Forecast Widget">
+            
+            <!-- City Search & Location Bar -->
+            <div class="weather-search-container">
+                <div class="weather-search-row">
+                    <div class="weather-search-input-wrap">
+                        <span class="search-icon-inside">🔍</span>
+                        <input type="text" id="citySearchInput" class="weather-search-input" 
+                               placeholder="Search district or city (e.g. Pune, Nagpur, Nashik)..."
+                               data-i18n-placeholder="weather_search_placeholder" 
+                               autocomplete="off" aria-label="Search city or district">
+                        <button type="button" id="citySearchClear" class="weather-search-clear hidden" aria-label="Clear search">×</button>
+                        <div id="citySearchResults" class="weather-search-dropdown" role="listbox"></div>
+                    </div>
+                    <button class="weather-btn-detect" id="detectLocationHeader" aria-label="Detect current GPS location">
+                        <i data-lucide="crosshair" class="ah-icon ah-green"></i>
+                        <span id="detectHeaderBtnText" data-i18n="weather_detect_btn">Detect Location</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Notice / Status Pill (fallback, offline, or current location info) -->
+            <div id="weatherNoticeWrap" class="text-center" style="display:none;" aria-live="polite">
+                <span id="weatherNoticePill" class="weather-notice-pill weather-notice-fallback">
+                    📍 <span id="weatherNoticeText">Showing Nagpur (Default) — Click Detect or search above</span>
+                </span>
+            </div>
+
+            <!-- Initial State (if needed, but script will auto-load cached or Nagpur) -->
+            <div id="weatherInitial" class="weather-initial hidden">
+                <div class="weather-init-icon">🌾</div>
+                <h2 data-i18n="weather_init_title"><i data-lucide="map-pin" class="ah-icon ah-blue"></i>Get Real-Time Weather</h2>
+                <p data-i18n="weather_init_desc">Allow location access or search your city to see real-time weather and agro-advisories for your fields.</p>
                 <button class="btn-primary btn-large" id="detectLocation"><span id="detectBtnText" data-i18n="weather_detect_btn"><i data-lucide="map-pin" class="ah-icon"></i>Detect My Location</span></button>
-                <p class="weather-privacy-note"> Your location is used only for weather lookup and not stored.</p>
+                <p class="weather-privacy-note">Your location is used only for weather lookup and not stored on servers.</p>
             </div>
-            <div id="weatherLoading" class="weather-loading hidden">
+
+            <!-- Loading Skeleton & Spinner -->
+            <div id="weatherLoading" class="weather-loading hidden" aria-live="polite">
                 <div class="spinner spinner--large"></div>
-                <p class="loading-text" data-i18n="weather_detecting">Fetching satellite data...</p>
+                <p class="loading-text" id="weatherLoadingText" data-i18n="weather_detecting">Fetching satellite and meteorological data...</p>
             </div>
-            <div id="weatherDisplay" class="weather-display hidden">
+
+            <!-- Live Weather Display View -->
+            <div id="weatherDisplay" class="weather-display" aria-live="polite">
+                
+                <!-- Weather Header -->
                 <div class="weather-header">
                     <div class="weather-location">
-                        <span class="location-icon"></span>
-                        <h2 id="weatherCity">--</h2>
-                        <span id="weatherCountry" class="weather-country"></span>
+                        <i data-lucide="map-pin" class="ah-icon-lg ah-green"></i>
+                        <h2 id="weatherCity">Nagpur</h2>
+                        <span id="weatherCountry" class="weather-country">Maharashtra, India</span>
                     </div>
-                    <button class="btn-refresh" id="refreshWeather" title="Refresh" data-i18n-title="weather_refresh_btn"></button>
-                </div>
-                <div class="weather-main">
-                    <div class="weather-icon-large" id="weatherIconLarge">--</div>
-                    <div class="weather-temp-block">
-                        <span class="temp-value" id="weatherTemp">--</span><span class="temp-unit">°C</span>
+                    <div class="weather-header-actions">
+                        <button class="btn-refresh" id="refreshWeather" title="Refresh Weather" data-i18n-title="weather_refresh_btn" aria-label="Refresh weather data">
+                            <i data-lucide="rotate-cw" class="ah-icon ah-green" style="margin:0;"></i>
+                        </button>
                     </div>
-                    <p class="weather-condition" id="weatherCondition">--</p>
-                    <p class="weather-feels-like"><span data-i18n="weather_feels_like">Feels like</span>: <span id="weatherFeelsLike">--</span>°C</p>
                 </div>
+
+                <!-- Current Conditions Hero Card -->
+                <div class="weather-hero-card">
+                    <div class="weather-hero-icon" id="weatherIconLarge" aria-hidden="true">☀️</div>
+                    <div class="weather-hero-temp-group">
+                        <div>
+                            <span class="temp-value" id="weatherTemp">--</span><span class="temp-unit">°C</span>
+                        </div>
+                        <p class="weather-condition" id="weatherCondition">--</p>
+                        <p class="weather-feels-like"><span data-i18n="weather_feels_like">Feels like</span>: <span id="weatherFeelsLike">--</span>°C</p>
+                    </div>
+                    <div class="weather-hero-right">
+                        <div class="weather-high-low" id="weatherHighLow">H: --°C | L: --°C</div>
+                        <div class="weather-rain-today" id="weatherRainTodayWrap">🌧️ <span data-i18n="weather_rain_lbl">Rain Today</span>: <span id="weatherRainSum">0.0</span> mm</div>
+                    </div>
+                </div>
+
+                <!-- Primary Meteorological Stats Grid -->
                 <div class="weather-stats-grid">
-                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
-                            id="weatherHumidity">--</span><span class="stat-lbl" data-i18n="weather_humidity_lbl">Humidity</span></div>
-                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
-                            id="weatherWind">--</span><span class="stat-lbl" data-i18n="weather_wind_lbl">Wind km/h</span></div>
-                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
-                            id="weatherVisibility">--</span><span class="stat-lbl" data-i18n="weather_visibility_lbl">Visibility km</span></div>
-                    <div class="weather-stat"><span class="stat-icon"></span><span class="stat-val"
-                            id="weatherPressure">--</span><span class="stat-lbl" data-i18n="weather_pressure_lbl">Pressure hPa</span></div>
+                    <div class="weather-stat">
+                        <span class="stat-icon">💧</span>
+                        <span class="stat-val" id="weatherHumidity">--%</span>
+                        <span class="stat-lbl" data-i18n="weather_humidity_lbl">Humidity</span>
+                    </div>
+                    <div class="weather-stat">
+                        <span class="stat-icon">💨</span>
+                        <span class="stat-val" id="weatherWind">-- km/h</span>
+                        <span class="stat-lbl" data-i18n="weather_wind_lbl">Wind km/h</span>
+                    </div>
+                    <div class="weather-stat">
+                        <span class="stat-icon">👁️</span>
+                        <span class="stat-val" id="weatherVisibility">-- km</span>
+                        <span class="stat-lbl" data-i18n="weather_visibility_lbl">Visibility km</span>
+                    </div>
+                    <div class="weather-stat">
+                        <span class="stat-icon">⏲️</span>
+                        <span class="stat-val" id="weatherPressure">-- hPa</span>
+                        <span class="stat-lbl" data-i18n="weather_pressure_lbl">Pressure hPa</span>
+                    </div>
                 </div>
-                <div class="weather-advice" id="weatherAdvice">
-                    <h4 data-i18n="weather_advisory_title">🌾 Farming Advice for Today</h4>
-                    <p id="adviceText">--</p>
+
+                <!-- Secondary Agro-Meteorological Stats Pills -->
+                <div class="weather-agro-grid">
+                    <div class="weather-agro-pill">
+                        <span class="agro-icon">🌧️</span>
+                        <div class="agro-info">
+                            <span class="agro-val" id="weatherRainProb">--%</span>
+                            <span class="agro-lbl" data-i18n="weather_rain_prob_lbl">Rain Probability</span>
+                        </div>
+                    </div>
+                    <div class="weather-agro-pill">
+                        <span class="agro-icon">🌱</span>
+                        <div class="agro-info">
+                            <span class="agro-val" id="weatherSoilMoist">-- m³/m³</span>
+                            <span class="agro-lbl" data-i18n="weather_soil_moist_lbl">Soil Moisture</span>
+                        </div>
+                    </div>
+                    <div class="weather-agro-pill">
+                        <span class="agro-icon">☀️</span>
+                        <div class="agro-info">
+                            <span class="agro-val" id="weatherUvIndex">--</span>
+                            <span class="agro-lbl" data-i18n="weather_uv_lbl">UV Index</span>
+                        </div>
+                    </div>
+                    <div class="weather-agro-pill">
+                        <span class="agro-icon">💦</span>
+                        <div class="agro-info">
+                            <span class="agro-val" id="weatherEt0">-- mm</span>
+                            <span class="agro-lbl" data-i18n="weather_et0_lbl">Water Loss (ET0)</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="weather-updated">Last updated: <span id="weatherTime">--</span></div>
+
+                <!-- Severe Weather Alerts Section -->
+                <div class="weather-alerts-container" id="weatherAlertsContainer">
+                    <h4 class="weather-section-title" data-i18n="weather_alerts_title">
+                        <i data-lucide="shield-alert" class="ah-icon ah-orange"></i>Agricultural Weather Alerts
+                    </h4>
+                    <div id="weatherAlertsList">
+                        <div class="weather-alert-card alert-all-clear">
+                            <span class="weather-alert-icon">✅</span>
+                            <div>
+                                <strong data-i18n="weather_alert_all_clear">All Clear — No severe weather risks detected for crops</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 24-Hour Hourly Forecast Strip -->
+                <div class="weather-hourly-wrap">
+                    <h4 class="weather-section-title" data-i18n="weather_hourly_title">
+                        <i data-lucide="clock" class="ah-icon ah-blue"></i>24-Hour Forecast & Field Conditions
+                    </h4>
+                    <div class="weather-hourly-strip" id="weatherHourlyStrip" role="region" aria-label="Hourly Weather Forecast Strip">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- 7-Day Extended Agricultural Forecast -->
+                <div class="weather-daily-wrap">
+                    <h4 class="weather-section-title" data-i18n="weather_daily_title">
+                        <i data-lucide="calendar" class="ah-icon ah-green"></i>7-Day Agricultural Forecast
+                    </h4>
+                    <div class="weather-daily-grid" id="weatherDailyGrid">
+                        <!-- Populated dynamically via JS -->
+                    </div>
+                </div>
+
+                <!-- Rule-Based Farming Advisory Section -->
+                <div class="weather-advice-wrap" id="weatherAdvice">
+                    <h4 class="weather-advice-title" data-i18n="weather_advisory_title">
+                        <i data-lucide="sprout" class="ah-icon ah-green"></i>🌾 Farming Advice for Today
+                    </h4>
+                    <ul class="weather-advice-list" id="weatherAdviceList">
+                        <!-- Populated dynamically via JS -->
+                    </ul>
+                    <!-- Legacy paragraph kept for test/selector safety -->
+                    <p id="adviceText" class="hidden">--</p>
+                </div>
+
+                <!-- Footer Bar (Last updated & auto-refresh note) -->
+                <div class="weather-footer-bar">
+                    <div class="weather-updated">
+                        <span data-i18n="weather_last_updated">Last updated</span>: <span id="weatherTime">--</span>
+                    </div>
+                    <div id="weatherAutoRefreshNotice" style="font-size: 0.75rem; color: var(--color-text-secondary);">
+                        🔄 Auto-refreshes every 15 minutes
+                    </div>
+                </div>
+
             </div>
-            <div id="weatherError" class="weather-error hidden">
-                <span class="error-icon"></span>
-                <h3 data-i18n="weather_err_title">Unable to get weather data</h3>
+
+            <!-- Error State View -->
+            <div id="weatherError" class="weather-error hidden" aria-live="assertive">
+                <span class="error-icon">⚠️</span>
+                <h3 id="weatherErrorTitle" data-i18n="weather_err_title">Unable to get weather data</h3>
                 <p id="weatherErrorMsg">Location access denied or network unavailable.</p>
-                <button class="btn-primary" id="retryWeather" data-i18n="weather_retry_btn">Try Again</button>
+                <div class="weather-error-actions">
+                    <button class="btn-primary" id="retryWeather" data-i18n="weather_retry_btn">Try Again</button>
+                    <button class="btn-nav-outline" id="useNagpurFallbackBtn" data-i18n="weather_use_nagpur_btn">Use Nagpur (Default)</button>
+                </div>
             </div>
+
         </div>
         <div class="text-center"><a href="index.html" class="btn-back" data-i18n="btn_back_home">← Back to Home</a></div>
     </div>
